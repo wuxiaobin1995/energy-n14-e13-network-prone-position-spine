@@ -1,24 +1,22 @@
-# energy-n14-e13-network-prone-position-spine
+<!--
+ * @Author      : Mr.bin
+ * @Date        : 2022-10-15 17:01:07
+ * @LastEditTime: 2022-10-17 14:18:40
+ * @Description : energy-n14-e13-network-prone-position-spine
+-->
 
-## Project setup
-```
-npm install
-```
+# 核心稳定训练系统-网络版
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
+## 传感器
 
-### Compiles and minifies for production
-```
-npm run build
-```
+- 范围：0~100
 
-### Lints and fixes files
-```
-npm run lint
-```
+## 设备类别
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+- 卧姿设备类别
+
+## 更新日志
+
+- v2.0.0
+  1. 重构了界面样式与布局
+  2. 增加和修改一些功能
