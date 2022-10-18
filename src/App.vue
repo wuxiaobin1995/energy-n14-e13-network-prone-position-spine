@@ -1,7 +1,7 @@
 <!--
  * @Author      : Mr.bin
  * @Date        : 2022-10-15 17:00:42
- * @LastEditTime: 2022-10-17 17:35:12
+ * @LastEditTime: 2022-10-18 09:17:55
  * @Description : 根组件
 -->
 <template>
@@ -77,6 +77,8 @@ export default {
                   message: `打开控制台失败：${err}`
                 })
               }
+              /* 未完成注册 */
+              this.inputFacilityID(`该设备仍未注册，请输入设备编号：`)
             })
             .catch(() => {
               /* 未完成注册 */
