@@ -1,7 +1,7 @@
 <!--
  * @Author      : Mr.bin
  * @Date        : 2022-10-15 17:00:42
- * @LastEditTime: 2022-10-18 09:17:55
+ * @LastEditTime: 2022-12-07 17:01:32
  * @Description : 根组件
 -->
 <template>
@@ -36,18 +36,18 @@ export default {
     /* 检验设备是否已完成注册 */
     this.checkoutFacilityID()
       .then(() => {
-        /* 检验设备是否到期计时器，每隔1小时调用一次 */
+        /* 检验设备是否到期计时器，每隔6小时调用一次 */
         this.checkoutDateDeadline() // 开软件先调用一次
         this.checkoutDateDeadlineClock = setInterval(() => {
           this.checkoutDateDeadline()
-        }, 3600000)
+        }, 21600000)
       })
       .then(() => {
-        /* 刷新设备在线状态计时器，每隔25分钟调用一次 */
+        /* 刷新设备在线状态计时器，每隔1小时调用一次 */
         this.resetOnlineTime() // 开软件先调用一次
         this.resetOnlineTimeClock = setInterval(() => {
           this.resetOnlineTime()
-        }, 1500000)
+        }, 3600000)
       })
   },
 
@@ -125,14 +125,14 @@ export default {
     registerFacilityID(facilityID) {
       this.fullscreenLoading = true
       this.$axios
-        .post('/registerDevicesName', {
+        .post('/registerDevicesName_v2', {
           devices_name: facilityID
         })
         .then(res => {
           const data = res.data
           if (data.status === 1) {
             /* 注册成功 */
-            window.localStorage.setItem('facilityID', data.result.name) // 把设备编号保存在localStorage中
+            window.localStorage.setItem('facilityID', data.result.devices_name) // 把设备编号保存在localStorage中
             this.$alert(
               `[状态码为 ${data.status}] 设备注册成功，请点击“刷新页面”按钮，以完成数据同步。`,
               '成功',
@@ -185,7 +185,7 @@ export default {
       const facilityID = window.localStorage.getItem('facilityID')
       this.fullscreenLoading = true
       this.$axios
-        .post('/getDevicesData', {
+        .post('/getDevicesData_v2', {
           devices_name: facilityID
         })
         .then(res => {
@@ -271,7 +271,7 @@ export default {
      */
     resetOnlineTime() {
       const facilityID = window.localStorage.getItem('facilityID')
-      this.$axios.post('/resetOnlineTime', {
+      this.$axios.post('/resetOnlineTime_v2', {
         devices_name: facilityID
       })
       // .then(res => {

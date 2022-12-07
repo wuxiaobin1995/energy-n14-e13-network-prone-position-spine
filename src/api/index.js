@@ -1,7 +1,7 @@
 /*
  * @Author      : Mr.bin
  * @Date        : 2021-11-10 11:14:44
- * @LastEditTime: 2022-10-17 14:51:37
+ * @LastEditTime: 2022-12-07 14:37:16
  * @Description : 封装axios
  */
 import axios from 'axios'

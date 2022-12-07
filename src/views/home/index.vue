@@ -1,7 +1,7 @@
 <!--
  * @Author      : Mr.bin
  * @Date        : 2022-10-17 17:38:01
- * @LastEditTime: 2022-10-17 17:38:06
+ * @LastEditTime: 2022-12-07 20:23:05
  * @Description : home
 -->
 <template>
@@ -76,6 +76,22 @@
         >
         </el-switch>
       </div>
+    </div>
+
+    <!-- 设备信息 -->
+    <div class="foot__info">
+      <span class="foot__info--item">
+        设备编号：{{
+          this.$store.state.facilityID ? this.$store.state.facilityID : '未注册'
+        }}
+      </span>
+      <span class="foot__info--item">
+        设备期限：{{
+          this.$store.state.facilityDeadline
+            ? this.$store.state.facilityDeadline
+            : '无'
+        }}
+      </span>
     </div>
 
     <!-- 打开控制台按钮 -->
@@ -324,6 +340,18 @@ export default {
         font-size: 22px;
         font-weight: 700;
       }
+    }
+  }
+
+  /* 设备信息 */
+  .foot__info {
+    position: absolute;
+    left: 10px;
+    bottom: 5px;
+    .foot__info--item {
+      padding-right: 20px;
+      color: green;
+      font-weight: 700;
     }
   }
 

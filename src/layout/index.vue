@@ -1,7 +1,7 @@
 <!--
  * @Author      : Mr.bin
  * @Date        : 2022-10-17 15:09:36
- * @LastEditTime: 2022-10-17 15:09:37
+ * @LastEditTime: 2022-12-07 17:03:41
  * @Description : 布局组件
 -->
 <template>
@@ -56,7 +56,7 @@ export default {
   /* 内容区 */
   .main {
     box-shadow: inset 0 1px 16px rgba(0, 0, 0, 0.5);
-    background: linear-gradient(-45deg, #a66cf1, #e7d4ff, #ffe5cc);
+    background: linear-gradient(-45deg, #9df6bb, #dafcc9, #9df6bb);
     width: 100%;
     height: 92vh;
     overflow-x: hidden; // 不允许X轴滚动

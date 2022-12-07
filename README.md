@@ -1,7 +1,7 @@
 <!--
  * @Author      : Mr.bin
  * @Date        : 2022-10-15 17:01:07
- * @LastEditTime: 2022-10-17 14:18:40
+ * @LastEditTime: 2022-12-07 14:31:09
  * @Description : energy-n14-e13-network-prone-position-spine
 -->
 
@@ -20,3 +20,4 @@
 - v2.0.0
   1. 重构了界面样式与布局
   2. 增加和修改一些功能
+  3. 修改了语音

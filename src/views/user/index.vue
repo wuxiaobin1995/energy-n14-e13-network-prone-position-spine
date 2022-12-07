@@ -1,11 +1,11 @@
 <!--
  * @Author      : Mr.bin
  * @Date        : 2022-07-28 11:35:59
- * @LastEditTime: 2022-10-17 17:43:13
+ * @LastEditTime: 2022-12-07 23:14:36
  * @Description : 用户
 -->
 <template>
-  <div class="user">
+  <div class="user" v-loading.fullscreen.lock="fullscreenLoading">
     <div class="wrapper">
       <!-- 顶部部分 -->
       <div class="top">
@@ -51,7 +51,7 @@
         :default-sort="{ prop: 'userId', order: 'descending' }"
         :stripe="true"
         :border="false"
-        v-loading="loading"
+        v-loading="tableLoading"
         element-loading-text="拼命加载中"
         element-loading-spinner="el-icon-loading"
         element-loading-background="rgba(0, 0, 0, 0.8)"
@@ -75,6 +75,9 @@
               <el-form-item label="产后时间：">
                 <span>{{ props.row.postpartumTime }}</span>
               </el-form-item>
+              <el-form-item label="用户注册日期：">
+                <span>{{ props.row.createTime }}</span>
+              </el-form-item>
               <el-form-item label="备注：">
                 <span>{{ props.row.remarks }}</span>
               </el-form-item>
@@ -82,6 +85,12 @@
           </template>
         </el-table-column>
 
+        <!-- No -->
+        <el-table-column
+          align="center"
+          type="index"
+          width="50"
+        ></el-table-column>
         <!-- ID -->
         <el-table-column
           align="center"
@@ -103,7 +112,6 @@
           prop="sex"
           label="性别"
           width="100"
-          sortable
         ></el-table-column>
         <!-- 最后登录时间 -->
         <el-table-column
@@ -122,7 +130,7 @@
               round
               icon="el-icon-edit"
               @click="handleEditUser(scope.$index, scope.row)"
-              >编辑</el-button
+              >编 辑</el-button
             >
           </template>
         </el-table-column>
@@ -135,7 +143,7 @@
               round
               icon="el-icon-delete"
               @click="handleDeleteUser(scope.$index, scope.row)"
-              >删除</el-button
+              >删 除</el-button
             >
           </template>
         </el-table-column>
@@ -148,7 +156,7 @@
               round
               icon="el-icon-check"
               @click="handleSelectUser(scope.$index, scope.row)"
-              >选择</el-button
+              >登 录</el-button
             >
           </template>
         </el-table-column>
@@ -172,7 +180,7 @@
 </template>
 
 <script>
-import { initDB } from '@/db/index.js'
+import { ipcRenderer } from 'electron'
 
 export default {
   name: 'user',
@@ -180,8 +188,9 @@ export default {
   data() {
     return {
       searchText: '', // 搜索框内容
-      loading: false, // 加载动画
       exportExcelLoading: false, // 导出Excel加载动画
+      tableLoading: true, // 表格加载动画
+      fullscreenLoading: false, // 全屏加载动画
 
       allUserData: [], // user表的所有用户数据
       showData: [] // 表格显示的数据
@@ -194,46 +203,107 @@ export default {
 
   methods: {
     /**
-     * @description: 获取所有user信息数据
-     */
-    getAllUsers() {
-      this.loading = true
-      const db = initDB()
-      db.user
-        .toArray()
-        .then(res => {
-          this.allUserData = res
-          this.showData = res
-        })
-        .catch(() => {
-          this.$confirm(`获取用户数据失败，请点击刷新按钮重试！`, '提示', {
-            type: 'warning',
-            center: true,
-            showClose: false,
-            closeOnClickModal: false,
-            closeOnPressEscape: false,
-            confirmButtonText: '刷 新',
-            cancelButtonText: '返回首页'
-          })
-            .then(() => {
-              this.handleRefresh()
-            })
-            .catch(() => {
-              this.$router.push({ path: '/home' })
-            })
-        })
-        .finally(() => {
-          this.loading = false
-        })
-    },
-
-    /**
      * @description: 返回首页
      */
     handleToHome() {
       this.$router.push({
         path: '/home'
       })
+    },
+
+    /**
+     * @description: 获取所有user信息数据
+     */
+    getAllUsers() {
+      const facilityID = window.localStorage.getItem('facilityID')
+      this.tableLoading = true
+      this.$axios
+        .post('/getUserList_v2', {
+          devices_name: facilityID
+        })
+        .then(res => {
+          const data = res.data
+          if (data.status === 1) {
+            /* 把key名改一下，与后端松耦合 */
+            const newData = []
+            for (let i = 0; i < data.result.length; i++) {
+              const total = {}
+              const element = data.result[i]
+              total.userId = element.user_id
+              total.userName = element.user_name
+              total.sex = element.sex === 1 ? '男' : '女'
+              total.birthday = element.birthday
+              total.height = element.height
+              total.weight = element.weight
+              total.bearWay = element.bearWay
+              total.postpartumTime = element.postpartumTime
+              total.remarks = element.remarks
+              total.lastLoginTime = element.login_time ? element.login_time : ''
+              total.createTime = element.create_time
+              newData.push(total)
+            }
+            /* 渲染表格数据 */
+            this.allUserData = newData
+            this.showData = newData
+          } else if (data.status === -9) {
+            /* 该设备编号不存在 */
+            this.$alert(
+              `[状态码为 ${data.status}] 该设备编号不存在，请重启软件！`,
+              '警告',
+              {
+                type: 'error',
+                showClose: false,
+                confirmButtonText: '关闭软件',
+                callback: () => {
+                  ipcRenderer.send('close') // 关闭整个程序
+                }
+              }
+            )
+          } else if (data.status === -10) {
+            /* 用户数据列表为空 */
+            this.$confirm(
+              `[状态码为 ${data.status}] 用户列表为空，请先注册新用户！`,
+              '提示',
+              {
+                type: 'info',
+                center: true,
+                showClose: false,
+                closeOnClickModal: false,
+                closeOnPressEscape: false,
+                confirmButtonText: '注册新用户',
+                cancelButtonText: '取消'
+              }
+            )
+              .then(() => {
+                this.$router.push({ path: '/user-add' })
+              })
+              .catch(() => {})
+          }
+        })
+        .catch(err => {
+          this.$confirm(
+            `[从后端获取全部用户数据环节] ${err}。请确保网络连接正常！`,
+            '网络请求错误',
+            {
+              type: 'error',
+              center: true,
+              showClose: false,
+              closeOnClickModal: false,
+              closeOnPressEscape: false,
+              confirmButtonText: '刷新页面',
+              cancelButtonText: '返回首页'
+            }
+          )
+            .then(() => {
+              this.handleRefresh()
+            })
+            .catch(() => {
+              this.handleToHome()
+            })
+        })
+        .finally(() => {
+          this.tableLoading = false
+        })
     },
 
     /**
@@ -282,7 +352,16 @@ export default {
       this.$router.push({
         path: '/user-edit',
         query: {
-          userId: JSON.stringify(row.userId)
+          userId: JSON.stringify(row.userId),
+          userName: JSON.stringify(row.userName),
+          sex: JSON.stringify(row.sex),
+          height: JSON.stringify(row.height),
+          weight: JSON.stringify(row.weight),
+          birthday: JSON.stringify(row.birthday),
+          bearWay: JSON.stringify(row.bearWay),
+          postpartumTime: JSON.stringify(row.postpartumTime),
+          remarks: JSON.stringify(row.remarks),
+          lastLoginTime: JSON.stringify(row.lastLoginTime)
         }
       })
     },
@@ -302,97 +381,254 @@ export default {
         inputPlaceholder: '请输入删除密码' // 输入框的占位符
       })
         .then(() => {
-          const db = initDB()
-          db.user
-            .delete(row.userId)
-            .then(() => {
-              this.$message({
-                message: '用户删除成功',
-                type: 'success',
-                duration: 3000
-              })
+          const facilityID = window.localStorage.getItem('facilityID')
+          this.fullscreenLoading = true
+          this.$axios
+            .post('/userDelete_v2', {
+              devices_name: facilityID,
+              user_id: row.userId
             })
-            .then(() => {
-              if (this.$store.state.currentUserInfo.userId === row.userId) {
-                this.$store.dispatch('changeCurrentUserInfo', {
-                  userId: '',
-                  userName: '',
-                  sex: '',
-                  height: '',
-                  weight: '',
-                  birthday: '',
-                  bearWay: '',
-                  postpartumTime: '',
-                  remarks: '',
-                  lastLoginTime: ''
+            .then(res => {
+              const data = res.data
+              if (data.status === 1) {
+                /* 删除成功 */
+                // 如果目前这个人是登陆状态，则同步更新下Vuex
+                if (row.userId === this.$store.state.currentUserInfo.userId) {
+                  this.$store.dispatch('changeCurrentUserInfo', {
+                    userId: '',
+                    userName: '',
+                    height: '',
+                    weight: '',
+                    sex: '',
+                    birthday: '',
+                    bearWay: '',
+                    postpartumTime: '',
+                    remarks: '',
+                    lastLoginTime: ''
+                  })
+                }
+
+                this.$message({
+                  message: `用户[${row.userName}]，删除成功`,
+                  type: 'success',
+                  duration: 3000
                 })
+                this.handleRefresh()
+              } else if (data.status === 0) {
+                /* 删除失败 */
+                this.$alert(
+                  `[状态码为 ${data.status}] 删除失败，请刷新页面！`,
+                  '警告',
+                  {
+                    type: 'error',
+                    showClose: false,
+                    confirmButtonText: '刷新页面',
+                    callback: () => {
+                      this.handleRefresh()
+                    }
+                  }
+                )
+              } else if (data.status === -6) {
+                /* 该用户ID不存在 */
+                this.$alert(
+                  `[状态码为 ${data.status}] 该用户ID不存在，请刷新页面！`,
+                  '警告',
+                  {
+                    type: 'error',
+                    showClose: false,
+                    confirmButtonText: '刷新页面',
+                    callback: () => {
+                      this.handleRefresh()
+                    }
+                  }
+                )
+              } else if (data.status === -9) {
+                /* 该设备编号不存在 */
+                this.$alert(
+                  `[状态码为 ${data.status}] 该设备编号不存在，请重启软件！`,
+                  '警告',
+                  {
+                    type: 'error',
+                    showClose: false,
+                    confirmButtonText: '关闭软件',
+                    callback: () => {
+                      ipcRenderer.send('close') // 关闭整个程序
+                    }
+                  }
+                )
+              } else if (data.status === -11) {
+                /* 传参错误 */
+                this.$alert(
+                  `[状态码为 ${data.status}] [${data.message}] 传参错误，请重启软件！`,
+                  '警告',
+                  {
+                    type: 'error',
+                    showClose: false,
+                    confirmButtonText: '关闭软件',
+                    callback: () => {
+                      ipcRenderer.send('close') // 关闭整个程序
+                    }
+                  }
+                )
               }
             })
-            .then(() => {
-              this.getAllUsers()
-            })
-            .catch(() => {
-              this.$alert(`删除失败，请刷新页面后重试！`, '警告', {
-                type: 'error',
-                showClose: false,
-                confirmButtonText: '刷新页面',
-                callback: () => {
-                  this.handleRefresh()
+            .catch(err => {
+              this.$alert(
+                `[删除用户环节] ${err}。请确保网络连接正常！`,
+                '网络请求错误',
+                {
+                  type: 'error',
+                  showClose: false,
+                  confirmButtonText: '刷新页面',
+                  callback: () => {
+                    this.handleRefresh()
+                  }
                 }
-              })
+              )
             })
             .finally(() => {
-              this.searchText = ''
+              this.fullscreenLoading = false
             })
         })
         .catch(() => {})
     },
 
     /**
-     * @description: 选择用户
+     * @description: 用户登录
      * @param {Number} index 该行索引
      * @param {Object} row 某一行数据
      */
     handleSelectUser(index, row) {
-      const lastLoginTime = this.$moment().format('YYYY-MM-DD HH:mm:ss') // 更新最后登录时间
-      const db = initDB()
-      db.user
-        .update(row.userId, {
-          lastLoginTime: lastLoginTime
+      const facilityID = window.localStorage.getItem('facilityID')
+      this.fullscreenLoading = true
+      this.$axios
+        .post('/userLogin_v2', {
+          devices_name: facilityID,
+          user_id: row.userId
         })
-        .catch(() => {
-          this.$message({
-            message: '更新最后登录时间失败',
-            type: 'error',
-            duration: 3000
-          })
+        .then(res => {
+          const data = res.data
+          if (data.status === 1) {
+            /* 登录成功 */
+            // 同步更新Vuex
+            this.$store
+              .dispatch('changeCurrentUserInfo', {
+                userId: row.userId,
+                userName: row.userName,
+                sex: row.sex,
+                height: row.height,
+                weight: row.weight,
+                birthday: row.birthday,
+                bearWay: row.bearWay,
+                postpartumTime: row.postpartumTime,
+                remarks: row.remarks,
+                lastLoginTime: data.result.login_time
+              })
+              .then(() => {
+                this.$message({
+                  message: `用户[${row.userName}]，登录成功`,
+                  type: 'success',
+                  duration: 2000
+                })
+              })
+              .then(() => {
+                this.handleToHome()
+              })
+              .catch(() => {
+                this.$alert(
+                  `设置Vuex失败，请刷新页面，然后重新登录！`,
+                  '警告',
+                  {
+                    type: 'error',
+                    showClose: false,
+                    confirmButtonText: '刷新页面',
+                    callback: () => {
+                      this.handleRefresh()
+                    }
+                  }
+                )
+              })
+          } else if (data.status === 0) {
+            /* 登录失败 */
+            this.$alert(
+              `[状态码为 ${data.status}] 登录失败，请刷新页面，然后重新登录！`,
+              '警告',
+              {
+                type: 'error',
+                showClose: false,
+                confirmButtonText: '刷新页面',
+                callback: () => {
+                  this.handleRefresh()
+                }
+              }
+            )
+          } else if (data.status === -6) {
+            /* 用户ID不存在 */
+            this.$alert(
+              `[状态码为 ${data.status}] 该用户ID不存在，请刷新页面，然后重新登录！`,
+              '警告',
+              {
+                type: 'error',
+                showClose: false,
+                confirmButtonText: '刷新页面',
+                callback: () => {
+                  this.handleRefresh()
+                }
+              }
+            )
+          } else if (data.status === -9) {
+            /* 该设备编号不存在 */
+            this.$alert(
+              `[状态码为 ${data.status}] 该设备编号不存在，请重启软件！`,
+              '警告',
+              {
+                type: 'error',
+                showClose: false,
+                confirmButtonText: '关闭软件',
+                callback: () => {
+                  ipcRenderer.send('close') // 关闭整个程序
+                }
+              }
+            )
+          } else if (data.status === -11) {
+            /* 传参错误 */
+            this.$alert(
+              `[状态码为 ${data.status}] [${data.message}] 传参错误，请重启软件！`,
+              '警告',
+              {
+                type: 'error',
+                showClose: false,
+                confirmButtonText: '关闭软件',
+                callback: () => {
+                  ipcRenderer.send('close') // 关闭整个程序
+                }
+              }
+            )
+          }
+        })
+        .catch(err => {
+          this.$confirm(
+            `[用户登录环节] ${err}。请确保网络连接正常！`,
+            '网络请求错误',
+            {
+              type: 'error',
+              center: true,
+              showClose: false,
+              closeOnClickModal: false,
+              closeOnPressEscape: false,
+              confirmButtonText: '刷新页面',
+              cancelButtonText: '返 回'
+            }
+          )
+            .then(() => {
+              this.handleRefresh()
+            })
+            .catch(() => {
+              this.handleToHome()
+            })
         })
         .finally(() => {
-          this.$store
-            .dispatch('changeCurrentUserInfo', {
-              userId: row.userId,
-              userName: row.userName,
-              sex: row.sex,
-              height: row.height,
-              weight: row.weight,
-              birthday: row.birthday,
-              bearWay: row.bearWay,
-              postpartumTime: row.postpartumTime,
-              remarks: row.remarks,
-              lastLoginTime: lastLoginTime
-            })
-            .then(() => {
-              this.$message({
-                message: `选择 [${row.userName}] 成功，Id为：${row.userId}`,
-                type: 'success',
-                duration: 4000
-              })
-            })
-            .then(() => {
-              this.$router.push({
-                path: '/home'
-              })
-            })
+          this.fullscreenLoading = false
         })
     },
 
@@ -424,6 +660,7 @@ export default {
               bearWay: '生育方式',
               postpartumTime: '产后时间',
               lastLoginTime: '最后登录时间',
+              createTime: '用户注册时间',
               remarks: '备注'
             }
             const tHeader = Object.values(excelTitle)
@@ -502,8 +739,8 @@ export default {
   @include flex(row, center, center);
 
   .wrapper {
-    width: 86%;
-    height: 90%;
+    width: 96%;
+    height: 94%;
     border-radius: 34px;
     background-color: #ffffff;
     box-shadow: 0 0 10px #929292;

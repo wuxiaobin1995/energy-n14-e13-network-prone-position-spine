@@ -63,6 +63,13 @@ const routes = [
         component: () => import('@/views/set/set-hospital'),
         meta: ['设置医院名称']
       },
+      // 设备信息
+      {
+        path: 'facility-info',
+        name: 'facility-info',
+        component: () => import('@/views/set/facility-info'),
+        meta: ['设备信息']
+      },
       // 开发者
       {
         path: 'set-developer',

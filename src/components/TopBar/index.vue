@@ -1,7 +1,7 @@
 <!--
  * @Author      : Mr.bin
  * @Date        : 2022-10-17 15:05:53
- * @LastEditTime: 2022-10-17 15:07:04
+ * @LastEditTime: 2022-12-07 17:53:35
  * @Description : 顶部栏
 -->
 <template>
@@ -35,6 +35,9 @@
               icon="el-icon-office-building"
               command="设置医院名称"
               >设置医院名称</el-dropdown-item
+            >
+            <el-dropdown-item icon="el-icon-cpu" command="设备信息"
+              >设备信息</el-dropdown-item
             >
             <el-dropdown-item
               icon="el-icon-s-promotion"
@@ -93,6 +96,11 @@ export default {
               })
             })
             .catch(() => {})
+          break
+        case '设备信息':
+          this.$router.push({
+            path: '/facility-info'
+          })
           break
         case '开发者':
           this.$prompt('请输入密码', '提示', {
