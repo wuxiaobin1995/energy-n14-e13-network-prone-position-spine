@@ -1,7 +1,7 @@
 /*
  * @Author      : Mr.bin
  * @Date        : 2022-10-15 17:00:42
- * @LastEditTime: 2022-10-17 15:11:05
+ * @LastEditTime: 2022-12-09 21:45:39
  * @Description : 路由
  */
 import Vue from 'vue'
@@ -42,12 +42,12 @@ const routes = [
         component: () => import('@/views/user'),
         meta: ['用户']
       },
-      // 添加用户
+      // 用户注册
       {
-        path: 'user-add',
-        name: 'user-add',
-        component: () => import('@/views/user-add'),
-        meta: ['添加用户']
+        path: 'user-register',
+        name: 'user-register',
+        component: () => import('@/views/user-register'),
+        meta: ['用户注册']
       },
       // 用户信息修改
       {
@@ -76,8 +76,103 @@ const routes = [
         name: 'set-developer',
         component: () => import('@/views/set/set-developer'),
         meta: ['开发者']
+      },
+      // 游戏
+      {
+        path: 'game',
+        name: 'game',
+        component: () => import('@/views/game'),
+        meta: ['游戏']
+      },
+
+      /* 测试模式 */
+      // 骨盆灵活度测试-动作展示
+      {
+        path: 'test-flexibility-show',
+        name: 'test-flexibility-show',
+        component: () => import('@/views/test-mode/flexibility/show'),
+        meta: ['骨盆灵活度测试-动作展示']
+      },
+      // 骨盆灵活度测试-内核心是什么
+      {
+        path: 'test-flexibility-what',
+        name: 'test-flexibility-what',
+        component: () => import('@/views/test-mode/flexibility/what'),
+        meta: ['骨盆灵活度测试-内核心是什么']
+      },
+      // 骨盆灵活度测试-内核心训练的好处
+      {
+        path: 'test-flexibility-why',
+        name: 'test-flexibility-why',
+        component: () => import('@/views/test-mode/flexibility/why'),
+        meta: ['骨盆灵活度测试-内核心训练的好处']
+      },
+      // 骨盆灵活度测试-测量页面
+      {
+        path: 'test-flexibility-measure',
+        name: 'test-flexibility-measure',
+        component: () => import('@/views/test-mode/flexibility/measure'),
+        meta: ['骨盆灵活度测试-测量页面']
+      },
+
+      /* 训练模式 */
+      // 训练项目选择
+      {
+        path: 'train-select',
+        name: 'train-select',
+        component: () => import('@/views/train-mode'),
+        meta: ['训练项目选择'],
+        redirect: '/train-select/core-activation-set',
+        children: [
+          // 内核心激活训练-参数设置
+          {
+            path: 'core-activation-set',
+            name: 'core-activation-set',
+            component: () => import('@/views/train-mode/core-activation/set'),
+            meta: ['内核心激活训练-参数设置']
+          },
+          // 活动度改善训练-参数设置
+          {
+            path: 'activity-improvement-set',
+            name: 'activity-improvement-set',
+            component: () =>
+              import('@/views/train-mode/activity-improvement/set'),
+            meta: ['活动度改善训练-参数设置']
+          },
+          // 腹式呼吸训练-参数设置
+          {
+            path: 'abdominal-respiration-set',
+            name: 'abdominal-respiration-set',
+            component: () =>
+              import('@/views/train-mode/abdominal-respiration/set'),
+            meta: ['腹式呼吸训练-参数设置']
+          },
+          // 静态训练-参数设置
+          {
+            path: 'static-set',
+            name: 'static-set',
+            component: () => import('@/views/train-mode/static/set'),
+            meta: ['静态训练-参数设置']
+          },
+          // 动态训练-参数设置
+          {
+            path: 'dynamic-set',
+            name: 'dynamic-set',
+            component: () => import('@/views/train-mode/dynamic/set'),
+            meta: ['动态训练-参数设置']
+          }
+        ]
       }
     ]
+  },
+
+  /* 测试报告 */
+  // 骨盆灵活度测试-导出PDF
+  {
+    path: '/test-flexibility-pdf',
+    name: 'test-flexibility-pdf',
+    component: () => import('@/views/test-mode/flexibility/pdf'),
+    meta: ['骨盆灵活度测试-导出PDF']
   },
 
   {

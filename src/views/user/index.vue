@@ -1,13 +1,13 @@
 <!--
  * @Author      : Mr.bin
  * @Date        : 2022-07-28 11:35:59
- * @LastEditTime: 2022-12-07 23:14:36
+ * @LastEditTime: 2022-12-09 14:51:25
  * @Description : 用户
 -->
 <template>
   <div class="user" v-loading.fullscreen.lock="fullscreenLoading">
     <div class="wrapper">
-      <!-- 顶部部分 -->
+      <!-- 顶部 -->
       <div class="top">
         <!-- 返回 -->
         <el-page-header
@@ -49,7 +49,7 @@
         style="width: 100%"
         height="auto"
         :default-sort="{ prop: 'userId', order: 'descending' }"
-        :stripe="true"
+        :stripe="false"
         :border="false"
         v-loading="tableLoading"
         element-loading-text="拼命加载中"
@@ -89,14 +89,14 @@
         <el-table-column
           align="center"
           type="index"
-          width="50"
+          width="60"
         ></el-table-column>
         <!-- ID -->
         <el-table-column
           align="center"
           prop="userId"
           label="ID"
-          width="200"
+          width="130"
           sortable
         ></el-table-column>
         <!-- 姓名 -->
@@ -111,7 +111,7 @@
           align="center"
           prop="sex"
           label="性别"
-          width="100"
+          width="60"
         ></el-table-column>
         <!-- 最后登录时间 -->
         <el-table-column
@@ -168,8 +168,8 @@
           class="item"
           type="success"
           icon="el-icon-user"
-          @click="handleAddUser"
-          >添加用户</el-button
+          @click="handleUserRegister"
+          >用户注册</el-button
         >
         <el-button class="item" type="info" @click="handleRefresh"
           >刷 新</el-button
@@ -188,6 +188,7 @@ export default {
   data() {
     return {
       searchText: '', // 搜索框内容
+
       exportExcelLoading: false, // 导出Excel加载动画
       tableLoading: true, // 表格加载动画
       fullscreenLoading: false, // 全屏加载动画
@@ -198,7 +199,7 @@ export default {
   },
 
   created() {
-    this.getAllUsers()
+    this.getAllUsersData()
   },
 
   methods: {
@@ -212,11 +213,11 @@ export default {
     },
 
     /**
-     * @description: 获取所有user信息数据
+     * @description: 获取所有用户的信息数据
      */
-    getAllUsers() {
-      const facilityID = window.localStorage.getItem('facilityID')
+    getAllUsersData() {
       this.tableLoading = true
+      const facilityID = window.localStorage.getItem('facilityID')
       this.$axios
         .post('/getUserList_v2', {
           devices_name: facilityID
@@ -228,18 +229,21 @@ export default {
             const newData = []
             for (let i = 0; i < data.result.length; i++) {
               const total = {}
-              const element = data.result[i]
-              total.userId = element.user_id
-              total.userName = element.user_name
-              total.sex = element.sex === 1 ? '男' : '女'
-              total.birthday = element.birthday
-              total.height = element.height
-              total.weight = element.weight
-              total.bearWay = element.bearWay
-              total.postpartumTime = element.postpartumTime
-              total.remarks = element.remarks
-              total.lastLoginTime = element.login_time ? element.login_time : ''
-              total.createTime = element.create_time
+              const item = data.result[i]
+
+              total.userId = item.user_id
+              total.userName = item.user_name
+              total.sex = item.sex === 1 ? '男' : '女'
+              total.birthday = item.birthday
+              total.height = item.height
+              total.weight = item.weight
+              total.bearWay = item.bearWay
+              total.postpartumTime = item.postpartumTime
+              total.remarks = item.remarks
+              total.createTime = item.create_time
+              total.lastLoginTime =
+                item.login_time === null ? '' : item.login_time
+
               newData.push(total)
             }
             /* 渲染表格数据 */
@@ -271,18 +275,20 @@ export default {
                 closeOnClickModal: false,
                 closeOnPressEscape: false,
                 confirmButtonText: '注册新用户',
-                cancelButtonText: '取消'
+                cancelButtonText: '返回首页'
               }
             )
               .then(() => {
-                this.$router.push({ path: '/user-add' })
+                this.$router.push({ path: '/user-register' })
               })
-              .catch(() => {})
+              .catch(() => {
+                this.handleToHome()
+              })
           }
         })
         .catch(err => {
           this.$confirm(
-            `[从后端获取全部用户数据环节] ${err}。请确保网络连接正常！`,
+            `[从后端获取所有用户的信息数据环节] ${err}。请确保网络连接正常！`,
             '网络请求错误',
             {
               type: 'error',
@@ -367,7 +373,7 @@ export default {
     },
 
     /**
-     * @description: 删除用户，密码是 energy
+     * @description: 删除用户，密码是energy
      * @param {Number} index 该行索引
      * @param {Object} row 某一行数据
      */
@@ -381,8 +387,8 @@ export default {
         inputPlaceholder: '请输入删除密码' // 输入框的占位符
       })
         .then(() => {
-          const facilityID = window.localStorage.getItem('facilityID')
           this.fullscreenLoading = true
+          const facilityID = window.localStorage.getItem('facilityID')
           this.$axios
             .post('/userDelete_v2', {
               devices_name: facilityID,
@@ -499,145 +505,161 @@ export default {
      * @param {Object} row 某一行数据
      */
     handleSelectUser(index, row) {
-      const facilityID = window.localStorage.getItem('facilityID')
-      this.fullscreenLoading = true
-      this.$axios
-        .post('/userLogin_v2', {
-          devices_name: facilityID,
-          user_id: row.userId
+      // 先判断一下该用户是否处于登录状态，避免重复登录
+      if (row.userId === this.$store.state.currentUserInfo.userId) {
+        this.$alert(`该用户已经处于登录状态，请勿重复登录。`, '提示', {
+          type: 'warning',
+          confirmButtonText: '确 定',
+          callback: () => {}
         })
-        .then(res => {
-          const data = res.data
-          if (data.status === 1) {
-            /* 登录成功 */
-            // 同步更新Vuex
-            this.$store
-              .dispatch('changeCurrentUserInfo', {
-                userId: row.userId,
-                userName: row.userName,
-                sex: row.sex,
-                height: row.height,
-                weight: row.weight,
-                birthday: row.birthday,
-                bearWay: row.bearWay,
-                postpartumTime: row.postpartumTime,
-                remarks: row.remarks,
-                lastLoginTime: data.result.login_time
-              })
-              .then(() => {
-                this.$message({
-                  message: `用户[${row.userName}]，登录成功`,
-                  type: 'success',
-                  duration: 2000
+      } else {
+        this.fullscreenLoading = true
+        const facilityID = window.localStorage.getItem('facilityID')
+        this.$axios
+          .post('/userLogin_v2', {
+            devices_name: facilityID,
+            user_id: row.userId
+          })
+          .then(res => {
+            const data = res.data
+            if (data.status === 1) {
+              /* 登录成功 */
+              // 同步更新用户信息Vuex
+              this.$store
+                .dispatch('changeCurrentUserInfo', {
+                  userId: row.userId,
+                  userName: row.userName,
+                  sex: row.sex,
+                  height: row.height,
+                  weight: row.weight,
+                  birthday: row.birthday,
+                  bearWay: row.bearWay,
+                  postpartumTime: row.postpartumTime,
+                  remarks: row.remarks,
+                  lastLoginTime: data.result.login_time
                 })
-              })
+                .then(() => {
+                  this.$message({
+                    message: `用户[${row.userName}]，登录成功`,
+                    type: 'success',
+                    duration: 2000
+                  })
+                })
+                .then(() => {
+                  this.handleToHome()
+                })
+                .then(() => {
+                  // 当登录其他用户时，把最大最小灵活度Vuex重置一下，防止bug
+                  this.$store.dispatch('setBothFlexibility', {
+                    maxDepth: null,
+                    minDepth: null
+                  })
+                })
+                .catch(() => {
+                  this.$alert(
+                    `同步Vuex失败，请刷新页面，然后重新登录！`,
+                    '警告',
+                    {
+                      type: 'error',
+                      showClose: false,
+                      confirmButtonText: '刷新页面',
+                      callback: () => {
+                        this.handleRefresh()
+                      }
+                    }
+                  )
+                })
+            } else if (data.status === 0) {
+              /* 登录失败 */
+              this.$alert(
+                `[状态码为 ${data.status}] 登录失败，请刷新页面，然后重新登录！`,
+                '警告',
+                {
+                  type: 'error',
+                  showClose: false,
+                  confirmButtonText: '刷新页面',
+                  callback: () => {
+                    this.handleRefresh()
+                  }
+                }
+              )
+            } else if (data.status === -6) {
+              /* 用户ID不存在 */
+              this.$alert(
+                `[状态码为 ${data.status}] 该用户ID不存在，请刷新页面，然后重新登录！`,
+                '警告',
+                {
+                  type: 'error',
+                  showClose: false,
+                  confirmButtonText: '刷新页面',
+                  callback: () => {
+                    this.handleRefresh()
+                  }
+                }
+              )
+            } else if (data.status === -9) {
+              /* 该设备编号不存在 */
+              this.$alert(
+                `[状态码为 ${data.status}] 该设备编号不存在，请重启软件！`,
+                '警告',
+                {
+                  type: 'error',
+                  showClose: false,
+                  confirmButtonText: '关闭软件',
+                  callback: () => {
+                    ipcRenderer.send('close') // 关闭整个程序
+                  }
+                }
+              )
+            } else if (data.status === -11) {
+              /* 传参错误 */
+              this.$alert(
+                `[状态码为 ${data.status}] [${data.message}] 传参错误，请重启软件！`,
+                '警告',
+                {
+                  type: 'error',
+                  showClose: false,
+                  confirmButtonText: '关闭软件',
+                  callback: () => {
+                    ipcRenderer.send('close') // 关闭整个程序
+                  }
+                }
+              )
+            }
+          })
+          .catch(err => {
+            this.$confirm(
+              `[用户登录环节] ${err}。请确保网络连接正常！`,
+              '网络请求错误',
+              {
+                type: 'error',
+                center: true,
+                showClose: false,
+                closeOnClickModal: false,
+                closeOnPressEscape: false,
+                confirmButtonText: '刷新页面',
+                cancelButtonText: '返回首页'
+              }
+            )
               .then(() => {
-                this.handleToHome()
+                this.handleRefresh()
               })
               .catch(() => {
-                this.$alert(
-                  `设置Vuex失败，请刷新页面，然后重新登录！`,
-                  '警告',
-                  {
-                    type: 'error',
-                    showClose: false,
-                    confirmButtonText: '刷新页面',
-                    callback: () => {
-                      this.handleRefresh()
-                    }
-                  }
-                )
+                this.handleToHome()
               })
-          } else if (data.status === 0) {
-            /* 登录失败 */
-            this.$alert(
-              `[状态码为 ${data.status}] 登录失败，请刷新页面，然后重新登录！`,
-              '警告',
-              {
-                type: 'error',
-                showClose: false,
-                confirmButtonText: '刷新页面',
-                callback: () => {
-                  this.handleRefresh()
-                }
-              }
-            )
-          } else if (data.status === -6) {
-            /* 用户ID不存在 */
-            this.$alert(
-              `[状态码为 ${data.status}] 该用户ID不存在，请刷新页面，然后重新登录！`,
-              '警告',
-              {
-                type: 'error',
-                showClose: false,
-                confirmButtonText: '刷新页面',
-                callback: () => {
-                  this.handleRefresh()
-                }
-              }
-            )
-          } else if (data.status === -9) {
-            /* 该设备编号不存在 */
-            this.$alert(
-              `[状态码为 ${data.status}] 该设备编号不存在，请重启软件！`,
-              '警告',
-              {
-                type: 'error',
-                showClose: false,
-                confirmButtonText: '关闭软件',
-                callback: () => {
-                  ipcRenderer.send('close') // 关闭整个程序
-                }
-              }
-            )
-          } else if (data.status === -11) {
-            /* 传参错误 */
-            this.$alert(
-              `[状态码为 ${data.status}] [${data.message}] 传参错误，请重启软件！`,
-              '警告',
-              {
-                type: 'error',
-                showClose: false,
-                confirmButtonText: '关闭软件',
-                callback: () => {
-                  ipcRenderer.send('close') // 关闭整个程序
-                }
-              }
-            )
-          }
-        })
-        .catch(err => {
-          this.$confirm(
-            `[用户登录环节] ${err}。请确保网络连接正常！`,
-            '网络请求错误',
-            {
-              type: 'error',
-              center: true,
-              showClose: false,
-              closeOnClickModal: false,
-              closeOnPressEscape: false,
-              confirmButtonText: '刷新页面',
-              cancelButtonText: '返 回'
-            }
-          )
-            .then(() => {
-              this.handleRefresh()
-            })
-            .catch(() => {
-              this.handleToHome()
-            })
-        })
-        .finally(() => {
-          this.fullscreenLoading = false
-        })
+          })
+          .finally(() => {
+            this.fullscreenLoading = false
+          })
+      }
     },
 
     /**
-     * @description: 跳转至添加用户页面
+     * @description: 跳转至用户注册页面
      */
-    handleAddUser() {
+    handleUserRegister() {
       this.$router.push({
-        path: '/user-add'
+        path: '/user-register'
       })
     },
 
@@ -747,7 +769,7 @@ export default {
     padding: 26px 40px;
     @include flex(column, stretch, stretch);
 
-    /* 顶部部分 */
+    /* 顶部 */
     .top {
       margin-bottom: 20px;
       @include flex(row, space-between, center);

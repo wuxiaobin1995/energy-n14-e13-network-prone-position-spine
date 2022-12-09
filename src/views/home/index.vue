@@ -1,7 +1,7 @@
 <!--
  * @Author      : Mr.bin
  * @Date        : 2022-10-17 17:38:01
- * @LastEditTime: 2022-12-07 20:23:05
+ * @LastEditTime: 2022-12-09 17:36:02
  * @Description : home
 -->
 <template>
@@ -145,7 +145,7 @@ export default {
       } else if (src === 'src2') {
         if (this.$store.state.currentUserInfo.userId) {
           this.$router.push({
-            path: '/test-select'
+            path: '/test-flexibility-show'
           })
         } else {
           this.$confirm(
@@ -167,9 +167,31 @@ export default {
         }
       } else if (src === 'src3') {
         if (this.$store.state.currentUserInfo.userId) {
-          this.$router.push({
-            path: '/train-select'
-          })
+          if (
+            this.$store.state.bothFlexibility.maxDepth !== null &&
+            this.$store.state.bothFlexibility.minDepth !== null
+          ) {
+            this.$router.push({
+              path: '/train-select/core-activation-set'
+            })
+          } else {
+            this.$confirm(
+              `检测到您没有最大和最小灵活度测量值，请先进行"骨盆灵活度测试"`,
+              '提示',
+              {
+                type: 'warning',
+                center: true,
+                showCancelButton: false,
+                confirmButtonText: '确 定'
+              }
+            )
+              .then(() => {
+                this.$router.push({
+                  path: '/test-flexibility-show'
+                })
+              })
+              .catch(() => {})
+          }
         } else {
           this.$confirm(
             `检测到您还没有选择用户，请先到用户页面进行选择！`,
@@ -210,10 +232,28 @@ export default {
             .catch(() => {})
         }
       } else if (src === 'src5') {
-        this.$message({
-          message: '提示，该功能仍在开发阶段......',
-          type: 'warning'
-        })
+        if (this.$store.state.currentUserInfo.userId) {
+          this.$router.push({
+            path: '/game'
+          })
+        } else {
+          this.$confirm(
+            `检测到您还没有选择用户，请先到用户页面进行选择！`,
+            '提示',
+            {
+              type: 'warning',
+              center: true,
+              showCancelButton: false,
+              confirmButtonText: '确 定'
+            }
+          )
+            .then(() => {
+              this.$router.push({
+                path: '/user'
+              })
+            })
+            .catch(() => {})
+        }
       }
     },
 

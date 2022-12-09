@@ -1,7 +1,7 @@
 <!--
  * @Author      : Mr.bin
  * @Date        : 2022-07-28 11:40:23
- * @LastEditTime: 2022-12-07 23:05:28
+ * @LastEditTime: 2022-12-08 10:58:55
  * @Description : 用户信息修改
 -->
 <template>
@@ -194,8 +194,7 @@ export default {
             message: '出生日期不能为空',
             trigger: 'change'
           }
-        ],
-        remarks: [{ required: true, message: '备注不能为空', trigger: 'blur' }]
+        ]
       }
     }
   },
@@ -207,8 +206,8 @@ export default {
     handleEdit() {
       this.$refs.form.validate(valid => {
         if (valid) {
-          const facilityID = window.localStorage.getItem('facilityID')
           this.fullscreenLoading = true
+          const facilityID = window.localStorage.getItem('facilityID')
           this.$axios
             .post('/userMessageChange_v2', {
               devices_name: facilityID,
@@ -257,7 +256,7 @@ export default {
                       })
                     })
                     .catch(() => {
-                      this.$alert(`设置Vuex失败，请重试！`, '警告', {
+                      this.$alert(`同步更新Vuex失败，请重试！`, '警告', {
                         type: 'error',
                         showClose: false,
                         confirmButtonText: '返回上一页',
@@ -330,18 +329,6 @@ export default {
                     callback: () => {
                       ipcRenderer.send('close') // 关闭整个程序
                     }
-                  }
-                )
-              } else if (data.status === -14) {
-                /* 用户名已存在 */
-                this.$alert(
-                  `[状态码为 ${data.status}] 存在相同姓名的人，请重新修改成别的名字！`,
-                  '警告',
-                  {
-                    type: 'error',
-                    showClose: false,
-                    confirmButtonText: '确 定',
-                    callback: () => {}
                   }
                 )
               }

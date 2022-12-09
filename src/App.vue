@@ -1,7 +1,7 @@
 <!--
  * @Author      : Mr.bin
  * @Date        : 2022-10-15 17:00:42
- * @LastEditTime: 2022-12-07 17:01:32
+ * @LastEditTime: 2022-12-08 11:59:17
  * @Description : 根组件
 -->
 <template>
@@ -43,11 +43,11 @@ export default {
         }, 21600000)
       })
       .then(() => {
-        /* 刷新设备在线状态计时器，每隔1小时调用一次 */
+        /* 刷新设备在线状态计时器，每隔25分钟调用一次（后端30分钟会检测一次，提前5分钟调用） */
         this.resetOnlineTime() // 开软件先调用一次
         this.resetOnlineTimeClock = setInterval(() => {
           this.resetOnlineTime()
-        }, 3600000)
+        }, 1500000)
       })
   },
 

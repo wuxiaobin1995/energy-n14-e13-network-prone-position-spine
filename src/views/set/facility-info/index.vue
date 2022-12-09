@@ -1,7 +1,7 @@
 <!--
  * @Author      : Mr.bin
  * @Date        : 2022-12-07 17:51:54
- * @LastEditTime: 2022-12-07 20:27:59
+ * @LastEditTime: 2022-12-08 14:50:03
  * @Description : 设备信息
 -->
 <template>
