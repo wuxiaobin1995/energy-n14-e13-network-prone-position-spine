@@ -1,20 +1,19 @@
 <!--
  * @Author      : Mr.bin
  * @Date        : 2022-12-09 21:39:41
- * @LastEditTime: 2022-12-09 21:41:10
+ * @LastEditTime: 2022-12-12 17:56:44
  * @Description : 腹式呼吸训练-参数设置
 -->
 <template>
   <div class="abdominal-respiration-set">
     <div class="des">
-      <div class="text">
-        <div class="text__item">
-          训练目的：进行腹式呼吸训练，加强腹横肌收缩能力；
-        </div>
-        <div class="text__item">
-          首先鼻吸气腹部隆起，随后嘴呼气，同时控制腰腹部向下压紧床面且能触及侧腹部肌肉明显收紧，过程中保持肩部和臀部紧贴软垫，重复至训练结束
-        </div>
+      <div class="item">
+        训练目的：进行腹式呼吸训练，加强腹横肌收缩能力，修复腹直肌分离，摆脱水桶腰，缓解肩颈疼痛
       </div>
+      <div class="item">
+        动作要求：首先鼻吸气腹部隆起，随后嘴呼气，同时控制腰腹部向下压紧床面且能触及侧腹部肌肉明显收紧，过程中保持肩部和臀部紧贴软垫，重复至训练结束
+      </div>
+      <div class="item">提示：从中点开始预备</div>
     </div>
 
     <div class="content">
@@ -52,8 +51,8 @@
             v-model="keepTime"
             :precision="0"
             :step="1"
-            :min="3"
-            :max="8"
+            :min="1"
+            :max="3"
             @change="handleKeepTimeChange"
           ></el-input-number>
         </div>
@@ -73,7 +72,7 @@
     </div>
 
     <div class="btn">
-      <el-button class="btn__item" type="primary" @click="handleStart"
+      <el-button class="item" type="primary" @click="handleStart"
         >开始训练</el-button
       >
     </div>
@@ -94,13 +93,11 @@ export default {
       /* 其他 */
       targetUp: this.$store.state.bothFlexibility.maxDepth,
       targetDown: this.$store.state.bothFlexibility.minDepth,
-      target:
-        this.$store.state.bothFlexibility.minDepth + 5
-          ? this.$store.state.bothFlexibility.minDepth + 5
-          : 5, // 训练目标
+
+      target: this.$store.state.bothFlexibility.minDepth + 5, // 训练目标
       num: 5, // 训练个数，5~20
-      keepTime: 6, // 保持时间，3~8
-      restTime: 3, // 休息时间，1~3
+      keepTime: 2, // 保持时间，1~3
+      restTime: 2, // 休息时间，1~3
 
       standardArray: [], // 基础参考曲线
       bgArray: [] // 参考曲线，暂定5个一组
@@ -252,15 +249,13 @@ export default {
      */
     handleStart() {
       this.$router.push({
-        path: '/',
+        path: '/abdominal-respiration-measure',
         query: {
-          targetUp: JSON.stringify(this.targetUp), // 上限
-          targetDown: JSON.stringify(this.targetDown), // 下限
-          midpoint: JSON.stringify(this.midpoint), // 中点
-          target: JSON.stringify(this.target), // 目标
-          num: JSON.stringify(this.num), // 训练个数
-          restTime: JSON.stringify(this.restTime), // 休息时间
-          keepTime: JSON.stringify(this.keepTime) // 保持时间
+          midpoint: JSON.stringify(this.midpoint),
+          target: JSON.stringify(this.target),
+          num: JSON.stringify(this.num),
+          restTime: JSON.stringify(this.restTime),
+          keepTime: JSON.stringify(this.keepTime)
         }
       })
     }
@@ -275,13 +270,10 @@ export default {
   @include flex(column, stretch, stretch);
 
   .des {
-    .text {
-      margin: 5px 0 15px 60px;
-
-      font-size: 18px;
-      .text__item {
-        margin-bottom: 5px;
-      }
+    margin: 5px 0 15px 60px;
+    font-size: 18px;
+    .item {
+      margin-bottom: 5px;
     }
   }
 
@@ -292,6 +284,7 @@ export default {
       flex: 1;
     }
     .set {
+      width: 35%;
       @include flex(column, center, center);
       .set__one {
         margin-bottom: 50px;
@@ -325,7 +318,7 @@ export default {
 
   .btn {
     @include flex(row, center, center);
-    .btn__item {
+    .item {
       font-size: 28px;
     }
   }

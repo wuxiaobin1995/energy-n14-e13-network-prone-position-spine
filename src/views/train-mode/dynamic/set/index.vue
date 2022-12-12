@@ -1,53 +1,23 @@
 <!--
  * @Author      : Mr.bin
  * @Date        : 2022-12-09 21:46:16
- * @LastEditTime: 2022-12-09 21:53:17
+ * @LastEditTime: 2022-12-12 15:39:50
  * @Description : 动态训练-参数设置
 -->
 <template>
   <div class="dynamic-set">
     <!-- 文字说明 -->
     <div class="des">
-      <div class="content">
-        <div class="content__item">训练目的：动态动作下，内核心稳定训练；</div>
-        <div class="content__item">
-          动作要求：首先将光标移动到绿色区域内，随后腰腹部持续收紧使光标不晃动，上下肢做指定的运动，过程中将肩部和臀部紧贴软垫，直至训练结束。
-        </div>
+      <div class="item">
+        训练目的：收紧腹部内核心力量，通过增加腹部肌肉包裹性提高腰椎稳定度，改善产后体态问题，从而达到塑形瘦身、体态调整目的
+      </div>
+      <div class="item">
+        动作要求：首先将光标移动到绿色区域内，随后腰腹部持续收紧使光标不晃动，上下肢做指定的运动，过程中将肩部和臀部紧贴软垫，直至训练结束
       </div>
     </div>
 
     <!-- 主区域 -->
     <div class="main">
-      <!-- 动作选择 -->
-      <div class="action">
-        <div class="item">
-          <el-radio v-model="action" label="1" border>动作一</el-radio>
-          <el-image :src="oneSrc" fit="scale-down"></el-image>
-        </div>
-        <div class="item">
-          <el-radio v-model="action" label="2" border>动作二</el-radio>
-          <el-image :src="twoSrc" fit="scale-down"></el-image>
-        </div>
-        <div class="item">
-          <el-radio v-model="action" label="3" border>动作三</el-radio>
-          <el-image :src="threeSrc" fit="scale-down"></el-image>
-        </div>
-      </div>
-
-      <!-- 图形区 -->
-      <div class="chart">
-        <div class="chart__bg" :style="bgColorObj"></div>
-        <el-slider
-          class="chart__core"
-          v-model="core"
-          vertical
-          :min="0"
-          :max="100"
-          :disabled="true"
-          :show-tooltip="false"
-        ></el-slider>
-      </div>
-
       <!-- 参数设置 -->
       <div class="set">
         <!-- 保持时间 -->
@@ -75,14 +45,44 @@
           ></el-input-number>
         </div>
       </div>
+
+      <!-- 图形区 -->
+      <div class="chart">
+        <div class="chart__bg" :style="bgColorObj"></div>
+        <el-slider
+          class="chart__core"
+          v-model="core"
+          vertical
+          :min="0"
+          :max="100"
+          :disabled="true"
+          :show-tooltip="false"
+        ></el-slider>
+      </div>
+
+      <!-- 动作选择 -->
+      <div class="action">
+        <div class="item">
+          <el-radio v-model="action" label="1" border>动作一</el-radio>
+          <el-image :src="oneSrc" fit="scale-down"></el-image>
+        </div>
+        <div class="item">
+          <el-radio v-model="action" label="2" border>动作二</el-radio>
+          <el-image :src="twoSrc" fit="scale-down"></el-image>
+        </div>
+        <div class="item">
+          <el-radio v-model="action" label="3" border>动作三</el-radio>
+          <el-image :src="threeSrc" fit="scale-down"></el-image>
+        </div>
+      </div>
     </div>
 
     <!-- 按钮组 -->
     <div class="btn">
-      <el-button class="btn__item" type="primary" @click="handleStart"
+      <el-button class="item" type="primary" @click="handleStart"
         >开始训练</el-button
       >
-      <el-button class="btn__item" type="info" plain @click="handleRefresh"
+      <el-button class="item" type="info" plain @click="handleRefresh"
         >刷新页面</el-button
       >
     </div>
@@ -104,25 +104,21 @@ export default {
       parser: null,
       scmBaudRate: 115200, // 默认波特率115200
 
-      /* 其他 */
       oneSrc: require('@/assets/img/Train/Dynamic/1.gif'),
       twoSrc: require('@/assets/img/Train/Dynamic/2.gif'),
       threeSrc: require('@/assets/img/Train/Dynamic/3.gif'),
+
+      /* 其他 */
       action: '1', // 动作选择
-      core: 0, // 光标数值
-      keepTime: 10, // 保持时间
+      keepTime: 10, // 保持时间，10~90
       // 训练目标，默认取上下限的中间值
       target: parseInt(
         (this.$store.state.bothFlexibility.maxDepth +
           this.$store.state.bothFlexibility.minDepth) /
           2
-      )
-        ? parseInt(
-            (this.$store.state.bothFlexibility.maxDepth +
-              this.$store.state.bothFlexibility.minDepth) /
-              2
-          )
-        : 50
+      ),
+
+      core: 0 // 光标数值
     }
   },
 
@@ -188,7 +184,7 @@ export default {
                 })
                 .catch(() => {
                   this.$router.push({
-                    path: '/layout/home'
+                    path: '/home'
                   })
                 })
             })
@@ -220,7 +216,7 @@ export default {
               })
               .catch(() => {
                 this.$router.push({
-                  path: '/layout/home'
+                  path: '/home'
                 })
               })
           }
@@ -244,7 +240,7 @@ export default {
             })
             .catch(() => {
               this.$router.push({
-                path: '/layout/home'
+                path: '/home'
               })
             })
         })
@@ -281,9 +277,9 @@ export default {
      */
     handleStart() {
       this.$router.push({
-        path: '/',
+        path: '/dynamic-measure',
         query: {
-          halfScope: JSON.stringify(5),
+          halfScope: JSON.stringify(2.5),
           target: JSON.stringify(this.target),
           keepTime: JSON.stringify(this.keepTime),
           action: JSON.stringify(this.action)
@@ -298,8 +294,8 @@ export default {
       this.$router.push({
         path: '/refresh',
         query: {
-          routerName: '/layout/dynamic-set',
-          duration: 500
+          routerName: JSON.stringify('/train-select/dynamic-set'),
+          duration: JSON.stringify(300)
         }
       })
     }
@@ -311,33 +307,40 @@ export default {
 .dynamic-set {
   width: 100%;
   height: 100%;
-  padding: 20px 40px;
   @include flex(column, stretch, stretch);
 
   /* 文字说明 */
   .des {
-    margin-bottom: 20px;
-    .content {
-      font-size: 18px;
-      .content__item {
-        margin-bottom: 5px;
-      }
+    margin: 5px 0 15px 60px;
+    font-size: 18px;
+    .item {
+      margin-bottom: 5px;
     }
   }
 
   /* 主区域 */
   .main {
+    margin: 0 0 0 60px;
     flex: 1;
     @include flex(row, space-between, stretch);
-
-    /* 动作选择 */
-    .action {
+    /* 参数设置 */
+    .set {
       width: 30%;
-      padding-left: 40px;
-      .item {
-        width: 42vh;
-        @include flex(row, center, center);
-        margin: 20px 0;
+      @include flex(column, center, center);
+      .set__one {
+        @include flex(row, flex-start, center);
+        .text {
+          font-size: 22px;
+          margin-right: 10px;
+        }
+      }
+      .set__two {
+        margin: 100px 0;
+        @include flex(row, flex-start, center);
+        .text {
+          font-size: 22px;
+          margin-right: 10px;
+        }
       }
     }
 
@@ -374,23 +377,15 @@ export default {
       }
     }
 
-    /* 参数设置 */
-    .set {
+    /* 动作选择 */
+    .action {
       width: 30%;
-      .set__one {
-        margin: 100px 0;
-        @include flex(row, flex-start, center);
-        .text {
-          font-size: 22px;
-          margin-right: 10px;
-        }
-      }
-      .set__two {
-        @include flex(row, flex-start, center);
-        .text {
-          font-size: 22px;
-          margin-right: 10px;
-        }
+      padding-right: 100px;
+      @include flex(column, center, center);
+      .item {
+        width: 36vh;
+        @include flex(row, center, center);
+        margin: 30px 0;
       }
     }
   }
@@ -398,7 +393,7 @@ export default {
   /* 按钮组 */
   .btn {
     @include flex(row, center, center);
-    .btn__item {
+    .item {
       font-size: 26px;
       margin: 0 40px;
     }

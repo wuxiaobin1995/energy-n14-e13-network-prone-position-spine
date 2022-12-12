@@ -1,7 +1,7 @@
 <!--
  * @Author      : Mr.bin
  * @Date        : 2022-12-08 16:13:32
- * @LastEditTime: 2022-12-09 20:48:22
+ * @LastEditTime: 2022-12-10 09:20:16
  * @Description : 骨盆灵活度测试-测量页面
 -->
 <template>
@@ -525,9 +525,9 @@ export default {
       @include flex(column, center, center);
       width: 300px;
       .text {
-        font-size: 20px;
+        font-size: 22px;
         font-weight: 700;
-        margin-bottom: 8px;
+        margin-bottom: 10px;
       }
       .img {
         box-shadow: 0 0 8px #929292;

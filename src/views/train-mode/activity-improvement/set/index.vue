@@ -1,23 +1,22 @@
 <!--
  * @Author      : Mr.bin
  * @Date        : 2022-12-09 21:12:48
- * @LastEditTime: 2022-12-09 21:37:43
+ * @LastEditTime: 2022-12-12 14:51:46
  * @Description : 活动度改善训练-参数设置
 -->
 <template>
   <div class="activity-improvement-set">
     <div class="des">
-      <div class="text">
-        <div class="text__item">训练目的：改善腰椎灵活性；</div>
-        <div class="text__item">
-          动作要求：吸气同时控制腰腹部缓慢向上抬至最高，上抬的过程中保持肩部和臀部紧贴软垫，随后呼气同时控制腰腹部缓慢向下压至最低，重复至训练结束。
-        </div>
+      <div class="item">训练目的：改善骨盆灵活度</div>
+      <div class="item">
+        动作要求：吸气同时控制腰腹部缓慢向上抬至最高，上抬的过程中保持肩部和臀部紧贴软垫，随后呼气同时控制腰腹部缓慢向下压至最低，重复至训练结束
       </div>
+      <div class="item">提示：从低点开始预备</div>
     </div>
 
     <div class="content">
-      <div class="chart">
-        <div id="chart" :style="{ width: '100%', height: '100%' }"></div>
+      <div class="img">
+        <el-image class="item" :src="imgSrc" fit="scale-down"></el-image>
       </div>
       <div class="set">
         <!-- 训练个数 -->
@@ -46,7 +45,7 @@
     </div>
 
     <div class="btn">
-      <el-button class="btn__item" type="primary" @click="handleStart"
+      <el-button class="item" type="primary" @click="handleStart"
         >开始训练</el-button
       >
     </div>
@@ -59,78 +58,32 @@ export default {
 
   data() {
     return {
+      imgSrc: require('@/assets/img/Train/Activity_Improvement/示意图.png'), // 示意图
+
       /* 图形相关变量 */
       myChart: null,
       option: {},
 
       /* 其他 */
-      targetUp: this.$store.state.bothFlexibility.maxDepth,
-      targetDown: this.$store.state.bothFlexibility.minDepth,
-      num: 5, // 训练个数
-      intervalTime: 4 // 间隔时间（秒）
+      targetUp: this.$store.state.bothFlexibility.maxDepth, // 训练目标上限
+      targetDown: this.$store.state.bothFlexibility.minDepth, // 训练目标下限
+      num: 5, // 训练个数（5~20）
+      intervalTime: 4 // 间隔时间（秒）（2~10）
     }
   },
 
-  mounted() {
-    this.initChart()
-  },
-
   methods: {
-    /**
-     * @description: 初始化echarts图形
-     */
-    initChart() {
-      this.myChart = this.$echarts.init(document.getElementById('chart'))
-      this.option = {
-        xAxis: {
-          type: 'category',
-          name: '秒',
-          data: [],
-          boundaryGap: false // 从0点开始
-        },
-        yAxis: {
-          type: 'value',
-          splitLine: {
-            show: false // 隐藏背景网格线
-          },
-          max: this.targetUp + 10,
-          min: this.targetDown - 10 >= 0 ? this.targetDown - 10 : 0
-        },
-        legend: {},
-        series: [
-          {
-            name: '上限',
-            data: [this.targetUp, this.targetUp],
-            color: 'blue',
-            type: 'line',
-            smooth: true,
-            showSymbol: false
-          },
-          {
-            name: '下限',
-            data: [this.targetDown, this.targetDown],
-            color: 'green',
-            type: 'line',
-            smooth: true,
-            showSymbol: false
-          }
-        ],
-        animation: false
-      }
-      this.myChart.setOption(this.option)
-    },
-
     /**
      * @description: 开始训练按钮
      */
     handleStart() {
       this.$router.push({
-        path: '/',
+        path: '/activity-improvement-measure',
         query: {
-          targetUp: JSON.stringify(this.targetUp), // 上限
-          targetDown: JSON.stringify(this.targetDown), // 下限
-          num: JSON.stringify(this.num), // 训练个数
-          intervalTime: JSON.stringify(this.intervalTime) // 间隔时间
+          targetUp: JSON.stringify(this.targetUp),
+          targetDown: JSON.stringify(this.targetDown),
+          num: JSON.stringify(this.num),
+          intervalTime: JSON.stringify(this.intervalTime)
         }
       })
     }
@@ -145,22 +98,25 @@ export default {
   @include flex(column, stretch, stretch);
 
   .des {
-    .text {
-      margin: 5px 0 15px 60px;
-      font-size: 18px;
-      .text__item {
-        margin-bottom: 5px;
-      }
+    margin: 5px 0 15px 60px;
+    font-size: 18px;
+    .item {
+      margin-bottom: 5px;
     }
   }
 
   .content {
     flex: 1;
     @include flex(row, space-between, stretch);
-    .chart {
+    .img {
       flex: 1;
+      @include flex(row, center, center);
+      .item {
+        transform: scale(1.3);
+      }
     }
     .set {
+      width: 35%;
       @include flex(column, center, center);
       .set__one {
         .text {
@@ -180,7 +136,7 @@ export default {
 
   .btn {
     @include flex(row, center, center);
-    .btn__item {
+    .item {
       font-size: 28px;
     }
   }

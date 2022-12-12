@@ -1,7 +1,7 @@
 <!--
  * @Author      : Mr.bin
  * @Date        : 2022-12-05 22:27:06
- * @LastEditTime: 2022-12-08 11:33:45
+ * @LastEditTime: 2022-12-12 11:12:21
  * @Description : 游戏
 -->
 <template>
@@ -176,7 +176,7 @@ export default {
           /* 调起游戏操作 */
           const exec = require('child_process').exec
           exec(
-            `C:/EnergyLife-2Sensors/EnergyLife-2Sensor.exe`,
+            `C:/Chicken-CrazyPark/Chicken-CrazyPark.exe`,
             (error, stdout, stderr) => {
               if (error != null) {
                 this.$message({

@@ -1,7 +1,7 @@
 /*
  * @Author      : Mr.bin
  * @Date        : 2022-10-15 17:00:42
- * @LastEditTime: 2022-12-09 21:45:39
+ * @LastEditTime: 2022-12-12 21:35:24
  * @Description : 路由
  */
 import Vue from 'vue'
@@ -162,6 +162,43 @@ const routes = [
             meta: ['动态训练-参数设置']
           }
         ]
+      },
+      // 内核心激活训练-具体测量
+      {
+        path: 'core-activation-measure',
+        name: 'core-activation-measure',
+        component: () => import('@/views/train-mode/core-activation/measure'),
+        meta: ['内核心激活训练-测量页面']
+      },
+      // 活动度改善训练-具体测量
+      {
+        path: 'activity-improvement-measure',
+        name: 'activity-improvement-measure',
+        component: () =>
+          import('@/views/train-mode/activity-improvement/measure'),
+        meta: ['活动度改善训练-测量页面']
+      },
+      // 腹式呼吸训练-具体测量
+      {
+        path: 'abdominal-respiration-measure',
+        name: 'abdominal-respiration-measure',
+        component: () =>
+          import('@/views/train-mode/abdominal-respiration/measure'),
+        meta: ['腹式呼吸训练-测量页面']
+      },
+      // 静态训练-具体测量
+      {
+        path: 'static-measure',
+        name: 'static-measure',
+        component: () => import('@/views/train-mode/static/measure'),
+        meta: ['静态训练-测量页面']
+      },
+      // 动态训练-具体测量
+      {
+        path: 'dynamic-measure',
+        name: 'dynamic-measure',
+        component: () => import('@/views/train-mode/dynamic/measure'),
+        meta: ['动态训练-测量页面']
       }
     ]
   },
@@ -173,6 +210,36 @@ const routes = [
     name: 'test-flexibility-pdf',
     component: () => import('@/views/test-mode/flexibility/pdf'),
     meta: ['骨盆灵活度测试-导出PDF']
+  },
+
+  /* 训练报告 */
+  // 活动度改善训练-导出PDF
+  {
+    path: '/train-activity-improvement-pdf',
+    name: 'train-activity-improvement-pdf',
+    component: () => import('@/views/train-mode/activity-improvement/pdf'),
+    meta: ['活动度改善训练-导出PDF']
+  },
+  // 腹式呼吸训练-导出PDF
+  {
+    path: '/train-abdominal-respiration-pdf',
+    name: 'train-abdominal-respiration-pdf',
+    component: () => import('@/views/train-mode/abdominal-respiration/pdf'),
+    meta: ['腹式呼吸训练-导出PDF']
+  },
+  // 静态训练-导出PDF
+  {
+    path: '/train-static-pdf',
+    name: 'train-static-pdf',
+    component: () => import('@/views/train-mode/static/pdf'),
+    meta: ['静态训练-导出PDF']
+  },
+  // 动态训练-导出PDF
+  {
+    path: '/train-dynamic-pdf',
+    name: 'train-dynamic-pdf',
+    component: () => import('@/views/train-mode/dynamic/pdf'),
+    meta: ['动态训练-导出PDF']
   },
 
   {

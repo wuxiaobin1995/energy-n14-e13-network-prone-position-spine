@@ -1,7 +1,7 @@
 <!--
  * @Author      : Mr.bin
  * @Date        : 2022-12-09 16:58:39
- * @LastEditTime: 2022-12-09 21:10:34
+ * @LastEditTime: 2022-12-12 17:21:15
  * @Description : 内核心激活训练-参数设置
 -->
 <template>
@@ -62,7 +62,7 @@
     </div>
 
     <div class="btn">
-      <el-button class="btn__item" type="primary" @click="handleStart"
+      <el-button class="item" type="primary" @click="handleStart"
         >开始训练</el-button
       >
     </div>
@@ -163,14 +163,14 @@ export default {
      * @description: 开始训练
      */
     handleStart() {
-      // this.$router.push({
-      //   path: '/',
-      //   query: {
-      //     targetUp: JSON.stringify(this.targetUp),
-      //     targetDown: JSON.stringify(this.targetDown),
-      //     num: JSON.stringify(this.num)
-      //   }
-      // })
+      this.$router.push({
+        path: '/core-activation-measure',
+        query: {
+          targetUp: JSON.stringify(this.targetUp),
+          targetDown: JSON.stringify(this.targetDown),
+          num: JSON.stringify(this.num)
+        }
+      })
     }
   }
 }
@@ -202,7 +202,7 @@ export default {
       .title {
         font-weight: 700;
         margin-bottom: 10px;
-        font-size: 18px;
+        font-size: 20px;
       }
       .img {
         box-shadow: 0 0 8px #929292;
@@ -232,7 +232,7 @@ export default {
 
   .btn {
     @include flex(row, center, center);
-    .btn__item {
+    .item {
       font-size: 28px;
     }
   }
