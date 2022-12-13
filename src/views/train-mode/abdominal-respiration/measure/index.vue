@@ -1,7 +1,7 @@
 <!--
  * @Author      : Mr.bin
  * @Date        : 2022-12-12 17:50:52
- * @LastEditTime: 2022-12-13 11:46:01
+ * @LastEditTime: 2022-12-13 21:50:07
  * @Description : 腹式呼吸训练-具体测量
 -->
 <template>
@@ -79,7 +79,7 @@ export default {
 
       /* 路由传参 */
       midpoint: JSON.parse(this.$route.query.midpoint), // 中点
-      target: JSON.parse(this.$route.query.target), // 训练目标
+      target: JSON.parse(this.$route.query.target), // 下压目标
       num: JSON.parse(this.$route.query.num), // 训练个数
       restTime: JSON.parse(this.$route.query.restTime), // 休息时间
       keepTime: JSON.parse(this.$route.query.keepTime), // 保持时间
@@ -337,7 +337,7 @@ export default {
             show: false // 隐藏背景网格线
           },
           max: this.midpoint + 10,
-          min: this.targetDown - 10 >= 0 ? this.targetDown - 10 : 0
+          min: this.target - 10 >= 0 ? this.target - 10 : 0
         },
         legend: {},
         series: [
@@ -350,7 +350,7 @@ export default {
             showSymbol: false
           },
           {
-            name: '参考曲线',
+            name: `参考曲线(${this.target}~${this.midpoint})`,
             data: this.bgArray,
             color: 'rgba(0, 255, 0, 0.5)',
             type: 'line',
