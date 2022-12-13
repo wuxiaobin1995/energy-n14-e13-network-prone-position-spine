@@ -1,7 +1,7 @@
 <!--
  * @Author      : Mr.bin
  * @Date        : 2022-12-12 21:31:50
- * @LastEditTime: 2022-12-12 21:36:23
+ * @LastEditTime: 2022-12-13 11:58:45
  * @Description : 静态训练-导出PDF
 -->
 <template>
@@ -10,7 +10,15 @@
 
 <script>
 export default {
-  name: 'train-static-pdf'
+  name: 'train-static-pdf',
+
+  data() {
+    return {
+      /* 路由传参 */
+      dataId: JSON.parse(this.$route.query.dataId),
+      routerName: JSON.parse(this.$route.query.routerName)
+    }
+  }
 }
 </script>
 

@@ -1,7 +1,7 @@
 <!--
  * @Author      : Mr.bin
  * @Date        : 2022-12-12 17:42:55
- * @LastEditTime: 2022-12-12 21:33:16
+ * @LastEditTime: 2022-12-13 11:57:58
  * @Description : 活动度改善训练-具体测量
 -->
 <template>
@@ -9,50 +9,55 @@
     class="activity-improvement-measure"
     v-loading.fullscreen.lock="fullscreenLoading"
   >
-    <div class="title">活动度改善训练</div>
+    <div class="wrapper">
+      <div class="title">活动度改善训练</div>
+      <div>提示：开始有5秒预备时间，请从低位开始预备</div>
 
-    <div class="content">
-      <div class="chart">
-        <div id="chart" :style="{ width: '100%', height: '100%' }"></div>
+      <div class="content">
+        <div class="chart">
+          <div id="chart" :style="{ width: '100%', height: '100%' }"></div>
+        </div>
+        <div class="num">
+          <div class="text">剩余训练个数</div>
+          <div class="value">{{ residueNum }}</div>
+        </div>
       </div>
-      <div class="num">
-        <div class="text">剩余训练个数</div>
-        <div class="value">{{ residueNum }}</div>
-      </div>
-    </div>
 
-    <div class="btn">
-      <el-button
-        class="item"
-        type="primary"
-        :disabled="isStart"
-        @click="handleStart"
-        >开始训练</el-button
-      >
-      <el-button
-        class="item"
-        type="warning"
-        :disabled="!isStart"
-        v-show="isPause"
-        @click="handleContinue"
-        >继续训练</el-button
-      >
-      <el-button
-        class="item"
-        type="warning"
-        :disabled="!isStart"
-        v-show="!isPause"
-        @click="handlePause"
-        >暂停训练</el-button
-      >
-      <el-button
-        class="item"
-        type="success"
-        :disabled="!isFinished"
-        @click="handleToPdf"
-        >查看报告</el-button
-      >
-      <el-button class="item" @click="handleGoBack">返回</el-button>
+      <div class="btn">
+        <el-button
+          class="item"
+          type="primary"
+          :disabled="isStart"
+          @click="handleStart"
+          >开始训练</el-button
+        >
+        <el-button
+          class="item"
+          type="warning"
+          :disabled="!isStart"
+          v-show="isPause"
+          @click="handleContinue"
+          >继续训练</el-button
+        >
+        <el-button
+          class="item"
+          type="warning"
+          :disabled="!isStart"
+          v-show="!isPause"
+          @click="handlePause"
+          >暂停训练</el-button
+        >
+        <el-button
+          class="item"
+          type="success"
+          :disabled="!isFinished"
+          @click="handleToPdf"
+          >查看报告</el-button
+        >
+        <el-button class="item" type="info" @click="handleGoBack"
+          >返 回</el-button
+        >
+      </div>
     </div>
   </div>
 </template>
@@ -89,6 +94,7 @@ export default {
       isStart: false, // 是否开始
       isPause: false, // 是否暂停
       isFinished: false, // 是否完成该次训练
+      isDelayed: true, // 是否要延时预备
 
       /* 其他 */
       fullscreenLoading: false,
@@ -148,15 +154,11 @@ export default {
             /* 调用 this.usbPort.open() 成功时触发（开启串口成功） */
             this.usbPort.on('open', () => {
               this.isStart = true
-
-              /* 开启成功先放一次上凸语音 */
-              if (this.audioOpen === true) {
-                this.audioSrc = this.audioUpSrc
-                setTimeout(() => {
-                  this.$refs.audio.currentTime = 0
-                  this.$refs.audio.play()
-                }, 100)
-              }
+              this.$message({
+                message: '预备阶段，倒计时5秒......',
+                type: 'warning',
+                duration: 4500
+              })
             })
             /* 调用 this.usbPort.open() 失败时触发（开启串口失败） */
             this.usbPort.on('error', () => {
@@ -177,31 +179,54 @@ export default {
               /* 只允许正整数和0，且[0, 100] */
               if (/^-?[0-9]\d*$/.test(depth) && depth >= 0 && depth <= 100) {
                 if (this.isPause === false) {
-                  this.depthArray.push(depth)
-                  this.depthShowArray.push(depth)
-                  this.residueNumArray.push(depth)
+                  // 延时预备5秒，让用户有个时间调整
+                  if (this.isDelayed === true) {
+                    this.depthShowArray.push(depth)
+                    this.option.series[0].data = this.depthShowArray
+                    this.myChart.setOption(this.option)
 
-                  if (
-                    this.depthShowArray.length ===
-                    this.intervalTime * 20 * 5
-                  ) {
-                    this.depthShowArray = []
+                    if (this.depthShowArray.length >= 50) {
+                      this.$message({
+                        message: '正式开始！',
+                        type: 'error',
+                        duration: 1000
+                      })
+                      this.depthShowArray = []
+                      this.isDelayed = false
+                    }
                   }
-                  if (this.residueNumArray.length === this.intervalTime * 20) {
-                    this.residueNumArray = []
-                    this.residueNum -= 1
-                  }
 
-                  // 渲染图形
-                  this.option.series[0].data = this.depthShowArray
-                  this.myChart.setOption(this.option)
+                  // 预备结束，正式测量
+                  if (this.isDelayed === false) {
+                    this.depthArray.push(depth)
+                    this.depthShowArray.push(depth)
+                    this.residueNumArray.push(depth)
 
-                  // 结束
-                  if (
-                    this.depthArray.length ===
-                    this.num * this.intervalTime * 20
-                  ) {
-                    this.saveData()
+                    if (
+                      this.depthShowArray.length ===
+                      this.intervalTime * 20 * 5
+                    ) {
+                      this.depthShowArray = []
+                    }
+                    if (
+                      this.residueNumArray.length ===
+                      this.intervalTime * 20
+                    ) {
+                      this.residueNumArray = []
+                      this.residueNum -= 1
+                    }
+
+                    // 渲染图形
+                    this.option.series[0].data = this.depthShowArray
+                    this.myChart.setOption(this.option)
+
+                    // 结束
+                    if (
+                      this.depthArray.length ===
+                      this.num * this.intervalTime * 20
+                    ) {
+                      this.saveData()
+                    }
                   }
                 }
               }
@@ -281,13 +306,12 @@ export default {
             show: false // 隐藏背景网格线
           },
           min: targetDown - 10 >= 0 ? targetDown - 10 : 0,
-          max: targetUp + 10
+          max: targetUp + 10 <= 100 ? targetUp + 10 : 100
         },
         legend: {},
-        // tooltip: {},
         series: [
           {
-            name: '轨迹',
+            name: '运动轨迹',
             data: [],
             color: 'red',
             type: 'line',
@@ -295,9 +319,9 @@ export default {
             showSymbol: false
           },
           {
-            name: '参考曲线',
+            name: `参考曲线(${targetDown}~${targetUp})`,
             data: this.bgArray,
-            color: 'green',
+            color: 'rgba(0, 255, 0, 0.5)',
             type: 'line',
             smooth: false,
             showSymbol: false
@@ -320,6 +344,7 @@ export default {
 
       this.isStart = false
       this.isPause = false
+      this.isDelayed = true
 
       /* 计算完成度 */
       const contrastArray = []
@@ -345,7 +370,7 @@ export default {
       this.$axios
         .post('/saveTrainRecord_v2', {
           devices_name: facilityID,
-          user_id: this.$store.state.currentUser.userId,
+          user_id: this.$store.state.currentUserInfo.userId,
           number_target: this.num,
           intervalTime_target: this.intervalTime,
           completion: result,
@@ -355,7 +380,6 @@ export default {
           type: 'activity-improvement'
         })
         .then(res => {
-          console.log(res)
           const data = res.data
           if (data.status === 1) {
             /* 成功 */
@@ -451,6 +475,7 @@ export default {
       this.isStart = false
       this.isPause = false
       this.isFinished = false
+      this.isDelayed = true
       this.residueNumArray = [] // 用于显示剩余个数的数组
       this.depthShowArray = [] // 展示数据数组
       this.depthArray = [] // 完整数据数组
@@ -506,42 +531,51 @@ export default {
 .activity-improvement-measure {
   width: 100%;
   height: 100%;
-  padding: 20px 40px;
-  @include flex(column, stretch, stretch);
+  @include flex(row, center, center);
 
-  .title {
-    font-size: 34px;
-    color: green;
-  }
+  .wrapper {
+    width: 96%;
+    height: 94%;
+    border-radius: 34px;
+    background-color: #ffffff;
+    box-shadow: 0 0 10px #929292;
+    padding: 26px 40px;
+    @include flex(column, stretch, stretch);
 
-  .content {
-    flex: 1;
-    @include flex(row, space-between, stretch);
-    .chart {
+    .title {
+      font-size: 34px;
+      color: green;
+    }
+
+    .content {
       flex: 1;
-    }
-    .num {
-      font-size: 24px;
-      @include flex(column, center, center);
-      .text {
-        margin-bottom: 16px;
+      @include flex(row, space-between, stretch);
+      .chart {
+        flex: 1;
       }
-      .value {
-        @include flex(row, center, center);
-        padding: 4px 0;
-        border: 1px solid black;
-        border-radius: 5px;
-        width: 100px;
-        background-color: rgb(216, 216, 216);
+      .num {
+        font-size: 24px;
+        @include flex(column, center, center);
+        .text {
+          margin-bottom: 16px;
+        }
+        .value {
+          @include flex(row, center, center);
+          padding: 4px 0;
+          border: 1px solid black;
+          border-radius: 5px;
+          width: 100px;
+          background-color: rgb(216, 216, 216);
+        }
       }
     }
-  }
 
-  .btn {
-    @include flex(row, center, center);
-    .item {
-      font-size: 28px;
-      margin: 0 40px;
+    .btn {
+      @include flex(row, center, center);
+      .item {
+        font-size: 28px;
+        margin: 0 40px;
+      }
     }
   }
 }

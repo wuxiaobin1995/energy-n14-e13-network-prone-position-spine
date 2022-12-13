@@ -1,7 +1,7 @@
 <!--
  * @Author      : Mr.bin
  * @Date        : 2022-12-08 17:55:19
- * @LastEditTime: 2022-12-09 16:36:50
+ * @LastEditTime: 2022-12-13 16:41:14
  * @Description : 骨盆灵活度测试-导出PDF
 -->
 <template>
@@ -82,7 +82,7 @@ export default {
 
       logoSrc: require('@/assets/img/Company_Logo/logo_1.png'), // 公司商标
       lv: require('@/assets/img/Test/Flexibility/PDF/很大.png'),
-      oneLv: require('@/assets/img/Test/Flexibility/PDF/很大.png'), //很大
+      oneLv: require('@/assets/img/Test/Flexibility/PDF/很大.png'), // 很大
       twoLv: require('@/assets/img/Test/Flexibility/PDF/大.png'), // 大
       threeLv: require('@/assets/img/Test/Flexibility/PDF/适中.png'), // 适中
       fourLv: require('@/assets/img/Test/Flexibility/PDF/小.png'), // 小

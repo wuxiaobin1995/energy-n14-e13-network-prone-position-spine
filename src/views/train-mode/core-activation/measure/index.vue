@@ -1,7 +1,7 @@
 <!--
  * @Author      : Mr.bin
  * @Date        : 2022-12-12 17:10:21
- * @LastEditTime: 2022-12-12 17:30:20
+ * @LastEditTime: 2022-12-13 11:43:10
  * @Description : 内核心激活训练-具体测量
 -->
 <template>
@@ -9,50 +9,54 @@
     class="core-activation-measure"
     v-loading.fullscreen.lock="fullscreenLoading"
   >
-    <div class="title">内核心激活训练</div>
+    <div class="wrapper">
+      <div class="title">内核心激活训练</div>
 
-    <div class="content">
-      <div class="chart">
-        <div id="chart" :style="{ width: '100%', height: '100%' }"></div>
+      <div class="content">
+        <div class="chart">
+          <div id="chart" :style="{ width: '100%', height: '100%' }"></div>
+        </div>
+        <div class="num">
+          <div class="text">剩余训练个数</div>
+          <div class="value">{{ residueNum }}</div>
+        </div>
       </div>
-      <div class="num">
-        <div class="text">剩余训练个数</div>
-        <div class="value">{{ residueNum }}</div>
-      </div>
-    </div>
 
-    <div class="btn">
-      <el-button
-        class="item"
-        type="primary"
-        :disabled="isStart"
-        @click="handleStart"
-        >开始训练</el-button
-      >
-      <el-button
-        class="item"
-        type="warning"
-        :disabled="!isStart"
-        v-show="isPause"
-        @click="handleContinue"
-        >继续训练</el-button
-      >
-      <el-button
-        class="item"
-        type="warning"
-        :disabled="!isStart"
-        v-show="!isPause"
-        @click="handlePause"
-        >暂停训练</el-button
-      >
-      <el-button
-        class="item"
-        type="danger"
-        :disabled="!isStart"
-        @click="handleOver"
-        >结束训练</el-button
-      >
-      <el-button class="item" @click="handleGoBack">返回</el-button>
+      <div class="btn">
+        <el-button
+          class="item"
+          type="primary"
+          :disabled="isStart"
+          @click="handleStart"
+          >开始训练</el-button
+        >
+        <el-button
+          class="item"
+          type="warning"
+          :disabled="!isStart"
+          v-show="isPause"
+          @click="handleContinue"
+          >继续训练</el-button
+        >
+        <el-button
+          class="item"
+          type="warning"
+          :disabled="!isStart"
+          v-show="!isPause"
+          @click="handlePause"
+          >暂停训练</el-button
+        >
+        <el-button
+          class="item"
+          type="danger"
+          :disabled="!isStart"
+          @click="handleOver"
+          >结束训练</el-button
+        >
+        <el-button class="item" type="info" @click="handleGoBack"
+          >返 回</el-button
+        >
+      </div>
     </div>
   </div>
 </template>
@@ -242,13 +246,13 @@ export default {
           splitLine: {
             show: false // 隐藏背景网格线
           },
-          max: this.targetUp + 20 <= 100 ? this.targetUp + 20 : 100,
-          min: this.targetDown - 20 >= 0 ? this.targetDown - 20 : 0
+          min: this.targetDown - 20 >= 0 ? this.targetDown - 20 : 0,
+          max: this.targetUp + 20 <= 100 ? this.targetUp + 20 : 100
         },
         legend: {},
         series: [
           {
-            name: '轨迹',
+            name: '运动轨迹',
             data: [],
             color: 'red',
             type: 'line',
@@ -256,17 +260,17 @@ export default {
             showSymbol: false
           },
           {
-            name: '上限',
+            name: `上限(${this.targetUp})`,
             data: targetUpArray,
-            color: 'blue',
+            color: 'rgba(0, 0, 255, 0.5)',
             type: 'line',
             smooth: true,
             showSymbol: false
           },
           {
-            name: '下限',
+            name: `下限(${this.targetDown})`,
             data: targetDownArray,
-            color: 'green',
+            color: 'rgba(0, 255, 0, 0.5)',
             type: 'line',
             smooth: true,
             showSymbol: false
@@ -297,12 +301,11 @@ export default {
       this.$axios
         .post('/saveTrainRecord_v2', {
           devices_name: facilityID,
-          user_id: this.$store.state.currentUser.userId,
+          user_id: this.$store.state.currentUserInfo.userId,
           adopt: result,
           type: 'core-activation'
         })
         .then(res => {
-          console.log(res)
           const data = res.data
           if (data.status === 1) {
             /* 成功 */
@@ -393,12 +396,11 @@ export default {
      * @description: 开始训练按钮
      */
     handleStart() {
-      // 初始化
       this.isInto = false
       this.isStart = false
       this.isPause = false
-      this.showArray = [] // 展示数组
       this.residueNum = this.num
+      this.showArray = []
 
       if (this.usbPort) {
         if (!this.usbPort.isOpen) {
@@ -444,42 +446,51 @@ export default {
 .core-activation-measure {
   width: 100%;
   height: 100%;
-  padding: 20px 40px;
-  @include flex(column, stretch, stretch);
+  @include flex(row, center, center);
 
-  .title {
-    font-size: 34px;
-    color: green;
-  }
+  .wrapper {
+    width: 96%;
+    height: 94%;
+    border-radius: 34px;
+    background-color: #ffffff;
+    box-shadow: 0 0 10px #929292;
+    padding: 26px 40px;
+    @include flex(column, stretch, stretch);
 
-  .content {
-    flex: 1;
-    @include flex(row, space-between, stretch);
-    .chart {
+    .title {
+      font-size: 34px;
+      color: green;
+    }
+
+    .content {
       flex: 1;
-    }
-    .num {
-      font-size: 24px;
-      @include flex(column, center, center);
-      .text {
-        margin-bottom: 16px;
+      @include flex(row, space-between, stretch);
+      .chart {
+        flex: 1;
       }
-      .value {
-        @include flex(row, center, center);
-        padding: 4px 0;
-        border: 1px solid black;
-        border-radius: 5px;
-        width: 100px;
-        background-color: rgb(216, 216, 216);
+      .num {
+        font-size: 24px;
+        @include flex(column, center, center);
+        .text {
+          margin-bottom: 16px;
+        }
+        .value {
+          @include flex(row, center, center);
+          padding: 4px 0;
+          border: 1px solid black;
+          border-radius: 5px;
+          width: 100px;
+          background-color: rgb(216, 216, 216);
+        }
       }
     }
-  }
 
-  .btn {
-    @include flex(row, center, center);
-    .item {
-      font-size: 28px;
-      margin: 0 40px;
+    .btn {
+      @include flex(row, center, center);
+      .item {
+        font-size: 28px;
+        margin: 0 40px;
+      }
     }
   }
 }

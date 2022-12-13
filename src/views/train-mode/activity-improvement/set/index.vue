@@ -1,7 +1,7 @@
 <!--
  * @Author      : Mr.bin
  * @Date        : 2022-12-09 21:12:48
- * @LastEditTime: 2022-12-12 14:51:46
+ * @LastEditTime: 2022-12-13 10:29:07
  * @Description : 活动度改善训练-参数设置
 -->
 <template>
@@ -110,9 +110,9 @@ export default {
     @include flex(row, space-between, stretch);
     .img {
       flex: 1;
-      @include flex(row, center, center);
+      @include flex(row, flex-end, center);
       .item {
-        transform: scale(1.3);
+        width: 90%;
       }
     }
     .set {

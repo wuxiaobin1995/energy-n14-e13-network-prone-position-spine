@@ -1,86 +1,89 @@
 <!--
  * @Author      : Mr.bin
  * @Date        : 2022-12-12 21:22:05
- * @LastEditTime: 2022-12-12 21:26:47
+ * @LastEditTime: 2022-12-13 11:55:35
  * @Description : 动态训练-具体测量
 -->
 <template>
   <div class="dynamic-measure" v-loading.fullscreen.lock="fullscreenLoading">
-    <!-- 主区域 -->
-    <div class="main">
-      <div class="left">
-        <div class="title">动态训练</div>
-        <div v-if="action === '1'" class="text">
-          动作要求：首先将光标移动到绿色区域内，随后腰腹部持续收紧使光标不晃动，单腿做屈伸的运动，过程中将肩部和臀部紧贴软垫，直至训练结束。
-        </div>
-        <div v-if="action === '2'" class="text">
-          动作要求：首先将光标移动到绿色区域内，随后腰腹部持续收紧使光标不晃动，双腿做交替屈伸的运动，过程中将肩部和臀部紧贴软垫，直至训练结束。
-        </div>
-        <div v-if="action === '3'" class="text">
-          动作要求：同时，首先将光标移动到绿色区域内，随后腰腹部持续收紧使光标不晃动，四肢做对侧交替屈伸的运动，过程中将肩部和臀部紧贴软垫，直至训练结束。
-        </div>
-        <div class="content">
-          <div class="time-bg">
-            <div class="time-rd-f">
-              <div class="time-rd-c">
-                <div class="time-text">{{ this.time }}</div>
+    <div class="wrapper">
+      <!-- 主区域 -->
+      <div class="main">
+        <div class="left">
+          <div class="title">动态训练</div>
+          <div v-if="action === '1'" class="text">
+            动作要求：首先将光标移动到绿色区域内，随后腰腹部持续收紧使光标不晃动，单腿做屈伸的运动，过程中将肩部和臀部紧贴软垫，直至训练结束。
+          </div>
+          <div v-if="action === '2'" class="text">
+            动作要求：首先将光标移动到绿色区域内，随后腰腹部持续收紧使光标不晃动，双腿做交替屈伸的运动，过程中将肩部和臀部紧贴软垫，直至训练结束。
+          </div>
+          <div v-if="action === '3'" class="text">
+            动作要求：同时，首先将光标移动到绿色区域内，随后腰腹部持续收紧使光标不晃动，四肢做对侧交替屈伸的运动，过程中将肩部和臀部紧贴软垫，直至训练结束。
+          </div>
+          <div class="content">
+            <div class="time-bg">
+              <div class="time-rd-f">
+                <div class="time-rd-c">
+                  <div class="time-text">{{ this.time }}</div>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <!-- 图形区 -->
-      <div class="chart">
-        <div class="chart__bg" :style="bgColorObj"></div>
-        <el-slider
-          class="chart__core"
-          v-model="core"
-          vertical
-          :min="0"
-          :max="100"
-          :disabled="true"
-          :show-tooltip="true"
-        ></el-slider>
-      </div>
-
-      <div class="right">
-        <div class="img">
-          <el-image :src="actionSrc" fit="scale-down"></el-image>
+        <!-- 图形区 -->
+        <div class="chart">
+          <div class="chart__bg" :style="bgColorObj"></div>
+          <el-slider
+            class="chart__core"
+            v-model="core"
+            vertical
+            :min="0"
+            :max="100"
+            :disabled="true"
+            :show-tooltip="true"
+          ></el-slider>
         </div>
-        <div class="text">
-          <div>训练目标</div>
-          <div class="val">{{ target }}</div>
+
+        <div class="right">
+          <div class="title">动作展示</div>
+          <div class="img">
+            <el-image :src="actionSrc" fit="scale-down"></el-image>
+          </div>
+          <div class="text">
+            <div>训练目标</div>
+            <div class="val">{{ target }}</div>
+          </div>
         </div>
       </div>
-    </div>
 
-    <!-- 按钮组 -->
-    <div class="btn">
-      <el-button
-        class="item"
-        :disabled="isStart"
-        type="primary"
-        @click="handleStart"
-        >开始训练</el-button
-      >
-      <el-button
-        class="item"
-        :disabled="!isStart"
-        type="danger"
-        @click="handleOver"
-        >结束训练</el-button
-      >
-      <el-button
-        class="item"
-        :disabled="!isFinish"
-        type="success"
-        @click="handleToPdf"
-        >查看报告</el-button
-      >
-      <el-button class="item" type="info" plain @click="handleGoBack"
-        >返回</el-button
-      >
+      <!-- 按钮组 -->
+      <div class="btn">
+        <el-button
+          class="item"
+          :disabled="isStart"
+          type="primary"
+          @click="handleStart"
+          >开始训练</el-button
+        >
+        <el-button
+          class="item"
+          :disabled="!isStart"
+          type="danger"
+          @click="handleOver"
+          >结束训练</el-button
+        >
+        <el-button
+          class="item"
+          :disabled="!isFinish"
+          type="success"
+          @click="handleToPdf"
+          >查看报告</el-button
+        >
+        <el-button class="item" type="info" plain @click="handleGoBack"
+          >返 回</el-button
+        >
+      </div>
     </div>
   </div>
 </template>
@@ -301,7 +304,7 @@ export default {
       this.$axios
         .post('/saveTrainRecord_v2', {
           devices_name: facilityID,
-          user_id: this.$store.state.currentUser.userId,
+          user_id: this.$store.state.currentUserInfo.userId,
           keep_time: this.keepTime,
           training_target: this.target,
           completion: result,
@@ -309,7 +312,6 @@ export default {
           type: `dynamic-${this.action}`
         })
         .then(res => {
-          console.log(res)
           const data = res.data
           if (data.status === 1) {
             /* 成功 */
@@ -449,115 +451,130 @@ export default {
 .dynamic-measure {
   width: 100%;
   height: 100%;
-  padding: 20px 40px;
-  @include flex(column, stretch, stretch);
+  @include flex(row, center, center);
 
-  /* 主区域 */
-  .main {
-    flex: 1;
-    @include flex(row, space-between, stretch);
-    .left {
-      width: 24%;
-      .title {
-        color: green;
-        font-size: 34px;
-        margin-bottom: 20px;
-      }
-      .text {
-        font-size: 20px;
-        margin-bottom: 4vh;
-      }
-      .content {
-        @include flex(row, center, center);
-        /* 倒计时 */
-        .time-bg {
-          width: 360px;
-          height: 280px;
+  .wrapper {
+    width: 96%;
+    height: 94%;
+    border-radius: 34px;
+    background-color: #ffffff;
+    box-shadow: 0 0 10px #929292;
+    padding: 26px 40px;
+    @include flex(column, stretch, stretch);
+
+    /* 主区域 */
+    .main {
+      flex: 1;
+      @include flex(row, space-between, stretch);
+      .left {
+        width: 24%;
+        .title {
+          color: green;
+          font-size: 34px;
+          margin-bottom: 20px;
+        }
+        .text {
+          font-size: 20px;
+          margin-bottom: 4vh;
+        }
+        .content {
           @include flex(row, center, center);
-          background-color: rgba(2, 145, 2, 0.2);
-          border-radius: 12%;
-          .time-rd-f {
-            width: 180px;
-            height: 180px;
-            padding: 5px;
-            border-radius: 50%;
-            background-image: -webkit-linear-gradient(top, red 0%, blue 90%);
-            .time-rd-c {
-              width: 100%;
-              height: 100%;
+          /* 倒计时 */
+          .time-bg {
+            width: 360px;
+            height: 280px;
+            @include flex(row, center, center);
+            background-color: rgba(2, 145, 2, 0.2);
+            border-radius: 12%;
+            .time-rd-f {
+              width: 180px;
+              height: 180px;
+              padding: 5px;
               border-radius: 50%;
-              background-color: #ffffff;
-              @include flex(row, center, center);
-              .time-text {
-                font-size: 80px;
+              background-image: -webkit-linear-gradient(top, red 0%, blue 90%);
+              .time-rd-c {
+                width: 100%;
+                height: 100%;
+                border-radius: 50%;
+                background-color: #ffffff;
+                @include flex(row, center, center);
+                .time-text {
+                  font-size: 80px;
+                }
               }
             }
           }
         }
       }
-    }
 
-    /* 图形区 */
-    .chart {
-      flex: 1;
-      @include flex(row, center, stretch);
-      .chart__bg {
-        width: 80px;
-        height: 80%;
+      /* 图形区 */
+      .chart {
+        flex: 1;
+        @include flex(row, center, stretch);
+        .chart__bg {
+          width: 80px;
+          height: 80%;
+        }
+        .chart__core {
+          height: 80%;
+          & /deep/ .el-slider__runway {
+            background-color: #ffffff;
+          }
+          & /deep/ .el-slider__bar {
+            background-color: #ffffff;
+          }
+          &
+            /deep/
+            .el-slider__runway.disabled
+            .el-slider__button-wrapper
+            .el-slider__button {
+            width: 0;
+            height: 0;
+            border-top: 12px solid transparent;
+            border-right: 30px solid green;
+            border-bottom: 12px solid transparent;
+            border-left: 0 solid transparent;
+            border-radius: 0;
+            background-color: #ffffff;
+          }
+        }
       }
-      .chart__core {
-        height: 80%;
-        & /deep/ .el-slider__runway {
-          background-color: #ffffff;
-        }
-        & /deep/ .el-slider__bar {
-          background-color: #ffffff;
-        }
-        &
-          /deep/
-          .el-slider__runway.disabled
-          .el-slider__button-wrapper
-          .el-slider__button {
-          width: 0;
-          height: 0;
-          border-top: 12px solid transparent;
-          border-right: 30px solid green;
-          border-bottom: 12px solid transparent;
-          border-left: 0 solid transparent;
-          border-radius: 0;
-          background-color: #ffffff;
-        }
-      }
-    }
 
-    .right {
-      .img {
-        width: 44vh;
-        @include flex(row, center, center);
-      }
-      .text {
-        padding-right: 50px;
-        font-size: 28px;
-        margin: 80px 0;
-        @include flex(row, space-between, center);
-        .val {
+      .right {
+        @include flex(column, center, center);
+        .title {
+          font-weight: 700;
+          margin-bottom: 10px;
+          font-size: 18px;
+        }
+        .img {
+          width: 44vh;
           @include flex(row, center, center);
-          width: 100px;
-          margin-left: 20px;
-          border-radius: 6px;
-          border: 1px solid rgb(161, 161, 161);
-          background-color: rgb(242, 242, 242);
+        }
+        .text {
+          padding-right: 50px;
+          font-size: 28px;
+          margin: 80px 0;
+          @include flex(row, space-between, center);
+          .val {
+            @include flex(row, center, center);
+            width: 100px;
+            margin-left: 20px;
+            border-radius: 6px;
+            border: 1px solid rgb(161, 161, 161);
+            background-color: rgb(242, 242, 242);
+          }
         }
       }
     }
-  }
 
-  /* 按钮组 */
-  .btn {
-    @include flex(row, center, center);
-    .item {
-      font-size: 26px;
-      margin: 0 40px;
+    /* 按钮组 */
+    .btn {
+      @include flex(row, center, center);
+      .item {
+        font-size: 26px;
+        margin: 0 40px;
+      }
     }
   }
 }

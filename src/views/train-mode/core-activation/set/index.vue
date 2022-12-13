@@ -1,7 +1,7 @@
 <!--
  * @Author      : Mr.bin
  * @Date        : 2022-12-09 16:58:39
- * @LastEditTime: 2022-12-12 17:21:15
+ * @LastEditTime: 2022-12-13 10:19:54
  * @Description : 内核心激活训练-参数设置
 -->
 <template>
@@ -117,8 +117,8 @@ export default {
           splitLine: {
             show: false // 隐藏背景网格线
           },
-          max: this.targetUp + 10 <= 100 ? this.targetUp + 10 : 100,
-          min: this.targetDown - 10 >= 0 ? this.targetDown - 10 : 0
+          min: this.targetDown - 10 >= 0 ? this.targetDown - 10 : 0,
+          max: this.targetUp + 10 <= 100 ? this.targetUp + 10 : 100
         },
         legend: {},
         series: [
