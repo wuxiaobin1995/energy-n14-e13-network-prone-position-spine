@@ -1,7 +1,7 @@
 <!--
  * @Author      : Mr.bin
  * @Date        : 2022-12-12 17:42:55
- * @LastEditTime: 2022-12-13 11:57:58
+ * @LastEditTime: 2022-12-14 09:00:43
  * @Description : 活动度改善训练-具体测量
 -->
 <template>
@@ -188,8 +188,8 @@ export default {
                     if (this.depthShowArray.length >= 50) {
                       this.$message({
                         message: '正式开始！',
-                        type: 'error',
-                        duration: 1000
+                        type: 'success',
+                        duration: 3000
                       })
                       this.depthShowArray = []
                       this.isDelayed = false

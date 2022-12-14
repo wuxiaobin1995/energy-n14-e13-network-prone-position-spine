@@ -1,7 +1,7 @@
 <!--
  * @Author      : Mr.bin
  * @Date        : 2022-12-12 17:50:52
- * @LastEditTime: 2022-12-13 21:50:07
+ * @LastEditTime: 2022-12-14 09:01:21
  * @Description : 腹式呼吸训练-具体测量
 -->
 <template>
@@ -194,8 +194,8 @@ export default {
                     if (this.depthShowArray.length >= 50) {
                       this.$message({
                         message: '正式开始！',
-                        type: 'error',
-                        duration: 1000
+                        type: 'success',
+                        duration: 3000
                       })
                       this.depthShowArray = []
                       this.isDelayed = false

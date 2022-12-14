@@ -1,7 +1,7 @@
 <!--
  * @Author      : Mr.bin
  * @Date        : 2022-12-12 21:31:50
- * @LastEditTime: 2022-12-13 17:26:43
+ * @LastEditTime: 2022-12-14 09:11:03
  * @Description : 活动度改善训练-导出PDF
 -->
 <template>
@@ -123,19 +123,18 @@ export default {
           train_record_id: this.dataId
         })
         .then(res => {
-          console.log(res)
           const data = res.data
           if (data.status === 1) {
             /* 成功 */
-            this.pdfData.userName = data.result[0].user_name
-            this.pdfData.sex = data.result[0].sex === 1 ? '男' : '女'
-            this.pdfData.pdfTime = data.result[0].create_time
-            this.pdfData.depthArray = JSON.parse(data.result[0].record_array)
-            this.pdfData.completion = data.result[0].completion
-            this.pdfData.num = data.result[0].number_target
-            this.pdfData.targetUp = data.result[0].upper_limit
-            this.pdfData.targetDown = data.result[0].lower_limit
-            this.pdfData.intervalTime = data.result[0].intervalTime_target
+            this.pdfData.userName = data.result.user_name
+            this.pdfData.sex = data.result.sex === 1 ? '男' : '女'
+            this.pdfData.pdfTime = data.result.create_time
+            this.pdfData.depthArray = JSON.parse(data.result.record_array)
+            this.pdfData.completion = data.result.completion
+            this.pdfData.num = data.result.number_target
+            this.pdfData.targetUp = data.result.upper_limit
+            this.pdfData.targetDown = data.result.lower_limit
+            this.pdfData.intervalTime = data.result.intervalTime_target
 
             /* 根据不同的评分动态变化显示 */
             if (this.pdfData.completion < 40) {

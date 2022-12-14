@@ -1,7 +1,7 @@
 /*
  * @Author      : Mr.bin
  * @Date        : 2022-10-15 17:00:42
- * @LastEditTime: 2022-12-12 21:35:24
+ * @LastEditTime: 2022-12-14 17:53:07
  * @Description : 路由
  */
 import Vue from 'vue'
@@ -199,6 +199,72 @@ const routes = [
         name: 'dynamic-measure',
         component: () => import('@/views/train-mode/dynamic/measure'),
         meta: ['动态训练-测量页面']
+      },
+
+      /* 数据记录 */
+      // 测试
+      {
+        path: 'test-record',
+        name: 'test-record',
+        component: () => import('@/views/record/test'),
+        meta: ['测试-数据记录'],
+        redirect: '/test-record/flexibility',
+        children: [
+          // 骨盆灵活度测试
+          {
+            path: 'flexibility',
+            name: 'test-flexibility-record',
+            component: () => import('@/views/record/test/flexibility'),
+            meta: ['骨盆灵活度测试']
+          }
+        ]
+      },
+      // 训练
+      {
+        path: 'train-record',
+        name: 'train-record',
+        component: () => import('@/views/record/train'),
+        meta: ['训练-数据记录'],
+        redirect: '/train-record/core-activation',
+        children: [
+          // 内核心激活训练
+          {
+            path: 'core-activation',
+            name: 'train-core-activation-record',
+            component: () => import('@/views/record/train/core-activation'),
+            meta: ['内核心激活训练']
+          },
+          // 活动度改善训练
+          {
+            path: 'activity-improvement',
+            name: 'train-activity-improvement-record',
+            component: () =>
+              import('@/views/record/train/activity-improvement'),
+            meta: ['活动度改善训练']
+          },
+          // 腹式呼吸训练
+          {
+            path: 'abdominal-respiration',
+            name: 'train-abdominal-respiration-record',
+            component: () =>
+              import('@/views/record/train/abdominal-respiration'),
+            meta: ['腹式呼吸训练']
+          },
+          // 静态训练
+          {
+            path: 'static',
+            name: 'train-static-record',
+            component: () => import('@/views/record/train/static'),
+            meta: ['静态训练']
+          },
+          // 动态训练
+          {
+            path: 'dynamic',
+            name: 'train-dynamic-record',
+            component: () => import('@/views/record/train/dynamic'),
+            meta: ['动态训练']
+          }
+        ]
       }
     ]
   },
@@ -211,6 +277,14 @@ const routes = [
     component: () => import('@/views/test-mode/flexibility/pdf'),
     meta: ['骨盆灵活度测试-导出PDF']
   },
+  // 骨盆灵活度测试-导出长期趋势PDF
+  {
+    path: '/test-flexibility-secular-trend-pdf',
+    name: 'test-flexibility-secular-trend-pdf',
+    component: () =>
+      import('@/views/record/test/flexibility/secular-trend-pdf'),
+    meta: ['骨盆灵活度测试-导出长期趋势PDF']
+  },
 
   /* 训练报告 */
   // 活动度改善训练-导出PDF
@@ -220,12 +294,28 @@ const routes = [
     component: () => import('@/views/train-mode/activity-improvement/pdf'),
     meta: ['活动度改善训练-导出PDF']
   },
+  // 活动度改善训练-导出长期趋势PDF
+  {
+    path: '/train-activity-improvement-secular-trend-pdf',
+    name: 'train-activity-improvement-secular-trend-pdf',
+    component: () =>
+      import('@/views/record/train/activity-improvement/secular-trend-pdf'),
+    meta: ['活动度改善训练-导出长期趋势PDF']
+  },
   // 腹式呼吸训练-导出PDF
   {
     path: '/train-abdominal-respiration-pdf',
     name: 'train-abdominal-respiration-pdf',
     component: () => import('@/views/train-mode/abdominal-respiration/pdf'),
     meta: ['腹式呼吸训练-导出PDF']
+  },
+  // 腹式呼吸训练-导出长期趋势PDF
+  {
+    path: '/train-abdominal-respiration-secular-trend-pdf',
+    name: 'train-abdominal-respiration-secular-trend-pdf',
+    component: () =>
+      import('@/views/record/train/abdominal-respiration/secular-trend-pdf'),
+    meta: ['腹式呼吸训练-导出长期趋势PDF']
   },
   // 静态训练-导出PDF
   {
@@ -234,12 +324,26 @@ const routes = [
     component: () => import('@/views/train-mode/static/pdf'),
     meta: ['静态训练-导出PDF']
   },
+  // 静态训练-导出长期趋势PDF
+  {
+    path: '/train-static-secular-trend-pdf',
+    name: 'train-static-secular-trend-pdf',
+    component: () => import('@/views/record/train/static/secular-trend-pdf'),
+    meta: ['静态训练-导出长期趋势PDF']
+  },
   // 动态训练-导出PDF
   {
     path: '/train-dynamic-pdf',
     name: 'train-dynamic-pdf',
     component: () => import('@/views/train-mode/dynamic/pdf'),
     meta: ['动态训练-导出PDF']
+  },
+  // 动态训练-导出长期趋势PDF
+  {
+    path: '/train-dynamic-secular-trend-pdf',
+    name: 'train-dynamic-secular-trend-pdf',
+    component: () => import('@/views/record/train/dynamic/secular-trend-pdf'),
+    meta: ['动态训练-导出长期趋势PDF']
   },
 
   {
