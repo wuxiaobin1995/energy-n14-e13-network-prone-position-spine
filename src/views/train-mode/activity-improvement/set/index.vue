@@ -1,11 +1,14 @@
 <!--
  * @Author      : Mr.bin
  * @Date        : 2022-12-09 21:12:48
- * @LastEditTime: 2022-12-13 10:29:07
+ * @LastEditTime: 2022-12-15 10:03:38
  * @Description : 活动度改善训练-参数设置
 -->
 <template>
   <div class="activity-improvement-set">
+    <!-- 语音播放 -->
+    <audio ref="audio" controls="controls" hidden :src="audioSrc" />
+
     <div class="des">
       <div class="item">训练目的：改善骨盆灵活度</div>
       <div class="item">
@@ -53,12 +56,19 @@
 </template>
 
 <script>
+/* 路径模块 */
+import path from 'path'
+
 export default {
   name: 'activity-improvement-set',
 
   data() {
     return {
       imgSrc: require('@/assets/img/Train/Activity_Improvement/示意图.png'), // 示意图
+
+      /* 语音相关 */
+      audioOpen: this.$store.state.voiceSwitch,
+      audioSrc: path.join(__static, `narrate/mandarin/活动度改善训练.mp3`),
 
       /* 图形相关变量 */
       myChart: null,
@@ -69,6 +79,15 @@ export default {
       targetDown: this.$store.state.bothFlexibility.minDepth, // 训练目标下限
       num: 5, // 训练个数（5~20）
       intervalTime: 4 // 间隔时间（秒）（2~10）
+    }
+  },
+
+  mounted() {
+    if (this.audioOpen === true) {
+      setTimeout(() => {
+        this.$refs.audio.currentTime = 0
+        this.$refs.audio.play()
+      }, 500)
     }
   },
 

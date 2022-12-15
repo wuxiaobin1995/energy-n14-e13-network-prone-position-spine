@@ -1,11 +1,14 @@
 <!--
  * @Author      : Mr.bin
  * @Date        : 2022-12-09 16:58:39
- * @LastEditTime: 2022-12-13 10:19:54
+ * @LastEditTime: 2022-12-15 10:01:28
  * @Description : 内核心激活训练-参数设置
 -->
 <template>
   <div class="core-activation-set">
+    <!-- 语音播放 -->
+    <audio ref="audio" controls="controls" hidden :src="audioSrc" />
+
     <div class="des">
       <div class="item">
         训练目的：激活腹横肌、多裂肌、盆底肌、膈肌，改善腹直肌分离、产后腰背疼痛
@@ -70,12 +73,19 @@
 </template>
 
 <script>
+/* 路径模块 */
+import path from 'path'
+
 export default {
   name: 'core-activation-set',
 
   data() {
     return {
       imgSrc: require('@/assets/img/Train/Core_Activation/示意图.png'), // 示意图
+
+      /* 语音相关 */
+      audioOpen: this.$store.state.voiceSwitch,
+      audioSrc: path.join(__static, `narrate/mandarin/内核心激活训练.mp3`),
 
       /* 图形相关变量 */
       myChart: null,
@@ -97,6 +107,13 @@ export default {
   },
   mounted() {
     this.initChart()
+
+    if (this.audioOpen === true) {
+      setTimeout(() => {
+        this.$refs.audio.currentTime = 0
+        this.$refs.audio.play()
+      }, 500)
+    }
   },
 
   methods: {

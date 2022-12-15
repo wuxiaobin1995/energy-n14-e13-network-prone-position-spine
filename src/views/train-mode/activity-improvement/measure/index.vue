@@ -1,7 +1,7 @@
 <!--
  * @Author      : Mr.bin
  * @Date        : 2022-12-12 17:42:55
- * @LastEditTime: 2022-12-14 09:00:43
+ * @LastEditTime: 2022-12-15 10:17:43
  * @Description : 活动度改善训练-具体测量
 -->
 <template>
@@ -9,6 +9,9 @@
     class="activity-improvement-measure"
     v-loading.fullscreen.lock="fullscreenLoading"
   >
+    <!-- 语音播放 -->
+    <audio ref="audio" controls="controls" hidden :src="audioSrc" />
+
     <div class="wrapper">
       <div class="title">活动度改善训练</div>
       <div>提示：开始有5秒预备时间，请从低位开始预备</div>
@@ -63,6 +66,9 @@
 </template>
 
 <script>
+/* 路径模块 */
+import path from 'path'
+
 /* 串口通信库 */
 import SerialPort from 'serialport'
 import Readline from '@serialport/parser-readline'
@@ -79,6 +85,12 @@ export default {
       targetDown: JSON.parse(this.$route.query.targetDown),
       num: JSON.parse(this.$route.query.num),
       intervalTime: JSON.parse(this.$route.query.intervalTime),
+
+      /* 语音相关 */
+      audioOpen: this.$store.state.voiceSwitch,
+      audioSrc: path.join(__static, `narrate/mandarin/上凸.mp3`),
+      audioUpSrc: path.join(__static, `narrate/mandarin/上凸.mp3`),
+      audioDownSrc: path.join(__static, `narrate/mandarin/下压.mp3`),
 
       /* 串口相关变量 */
       usbPort: null,
@@ -193,6 +205,14 @@ export default {
                       })
                       this.depthShowArray = []
                       this.isDelayed = false
+                      /* 正式开始，先放一次上凸语音 */
+                      if (this.audioOpen === true) {
+                        this.audioSrc = this.audioUpSrc
+                        setTimeout(() => {
+                          this.$refs.audio.currentTime = 0
+                          this.$refs.audio.play()
+                        }, 100)
+                      }
                     }
                   }
 
@@ -214,6 +234,29 @@ export default {
                     ) {
                       this.residueNumArray = []
                       this.residueNum -= 1
+                    }
+
+                    /* 语音播放 */
+                    if (this.audioOpen === true) {
+                      if (
+                        this.residueNumArray.length ===
+                        this.intervalTime * 20 - 4
+                      ) {
+                        this.audioSrc = this.audioUpSrc
+                        setTimeout(() => {
+                          this.$refs.audio.currentTime = 0
+                          this.$refs.audio.play()
+                        }, 100)
+                      } else if (
+                        this.residueNumArray.length ===
+                        this.intervalTime * 10 - 4
+                      ) {
+                        this.audioSrc = this.audioDownSrc
+                        setTimeout(() => {
+                          this.$refs.audio.currentTime = 0
+                          this.$refs.audio.play()
+                        }, 100)
+                      }
                     }
 
                     // 渲染图形

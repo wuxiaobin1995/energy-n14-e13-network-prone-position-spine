@@ -6,6 +6,9 @@
 -->
 <template>
   <div class="abdominal-respiration-set">
+    <!-- 语音播放 -->
+    <audio ref="audio" controls="controls" hidden :src="audioSrc" />
+
     <div class="des">
       <div class="item">
         训练目的：进行腹式呼吸训练，加强腹横肌收缩能力，修复腹直肌分离，摆脱水桶腰，缓解肩颈疼痛
@@ -80,11 +83,18 @@
 </template>
 
 <script>
+/* 路径模块 */
+import path from 'path'
+
 export default {
   name: 'abdominal-respiration-set',
 
   data() {
     return {
+      /* 语音相关 */
+      audioOpen: this.$store.state.voiceSwitch,
+      audioSrc: path.join(__static, `narrate/mandarin/腹式呼吸训练.mp3`),
+
       /* 图形相关变量 */
       myChart: null,
       option: {},
@@ -108,6 +118,13 @@ export default {
     this.countChart().then(() => {
       this.initChart()
     })
+
+    if (this.audioOpen === true) {
+      setTimeout(() => {
+        this.$refs.audio.currentTime = 0
+        this.$refs.audio.play()
+      }, 500)
+    }
   },
 
   computed: {

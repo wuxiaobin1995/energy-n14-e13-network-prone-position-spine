@@ -1,11 +1,14 @@
 <!--
  * @Author      : Mr.bin
  * @Date        : 2022-12-08 14:37:53
- * @LastEditTime: 2022-12-08 17:50:32
+ * @LastEditTime: 2022-12-15 10:07:24
  * @Description : 骨盆灵活度测试-动作展示
 -->
 <template>
   <div class="test-flexibility-show">
+    <!-- 语音播放 -->
+    <audio ref="audio" controls="controls" hidden :src="audioSrc" />
+
     <div class="wrapper">
       <el-page-header
         class="page"
@@ -41,12 +44,28 @@
 </template>
 
 <script>
+/* 路径模块 */
+import path from 'path'
+
 export default {
   name: 'test-flexibility-show',
 
   data() {
     return {
-      showImg: require('@/assets/img/Test/Flexibility/骨盆灵活度测试-动作展示.gif')
+      showImg: require('@/assets/img/Test/Flexibility/骨盆灵活度测试-动作展示.gif'),
+
+      /* 语音相关 */
+      audioOpen: this.$store.state.voiceSwitch,
+      audioSrc: path.join(__static, `narrate/mandarin/骨盆灵活度测试.mp3`)
+    }
+  },
+
+  mounted() {
+    if (this.audioOpen === true) {
+      setTimeout(() => {
+        this.$refs.audio.currentTime = 0
+        this.$refs.audio.play()
+      }, 500)
     }
   },
 
