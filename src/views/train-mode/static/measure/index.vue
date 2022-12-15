@@ -1,7 +1,7 @@
 <!--
  * @Author      : Mr.bin
  * @Date        : 2022-12-12 20:45:16
- * @LastEditTime: 2022-12-13 11:55:24
+ * @LastEditTime: 2022-12-15 15:41:19
  * @Description : 静态训练-具体测量
 -->
 <template>

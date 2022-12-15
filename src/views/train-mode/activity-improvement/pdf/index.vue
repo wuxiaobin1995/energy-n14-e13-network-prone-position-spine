@@ -1,7 +1,7 @@
 <!--
  * @Author      : Mr.bin
  * @Date        : 2022-12-12 21:31:50
- * @LastEditTime: 2022-12-14 09:11:03
+ * @LastEditTime: 2022-12-15 15:28:52
  * @Description : 活动度改善训练-导出PDF
 -->
 <template>
@@ -38,9 +38,7 @@
           <div class="val">
             <div class="title" :style="{ color: colorLv }">{{ textLv }}</div>
             <div class="num">训练个数：{{ pdfData.num }}</div>
-            <div class="completion">
-              训练评分：<span class="val">{{ pdfData.completion }}</span>
-            </div>
+            <div class="completion">训练评分：{{ pdfData.completion }}</div>
             <div class="advice">{{ advice }}</div>
           </div>
         </div>
@@ -381,9 +379,11 @@ export default {
         margin-right: 20px;
         .val {
           width: 240px;
+          font-size: 20px;
+          font-weight: 700;
           .title {
-            font-size: 36px;
-            margin-bottom: 35px;
+            font-size: 46px;
+            margin-bottom: 30px;
           }
           .num {
             margin-bottom: 3px;

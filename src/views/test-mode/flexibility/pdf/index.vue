@@ -1,7 +1,7 @@
 <!--
  * @Author      : Mr.bin
  * @Date        : 2022-12-08 17:55:19
- * @LastEditTime: 2022-12-14 17:25:13
+ * @LastEditTime: 2022-12-15 15:53:14
  * @Description : 骨盆灵活度测试-导出PDF
 -->
 <template>
@@ -40,17 +40,16 @@
 
         <div class="advice">
           <div class="title">建议：</div>
-          <div class="item">
+          <div class="item" v-if="textLv === '小' || textLv === '很小'">
             <span class="item-title">过低</span
-            >：骨盆的灵活度过低，可能会出现弯腰活动受限或
-            腰背酸痛等症状，首先需要首先进行内核心肌活和活动
-            度改善，增加腰椎灵活度的同事，掌握肌肉发力。
+            >：骨盆的灵活度过低，可能会出现弯腰活动受限或腰背酸痛等症状，首先需要首先进行内核心肌活和活动度改善，增加腰椎灵活度的同事，掌握肌肉发力。
           </div>
-          <div class="item">
+          <div class="item" v-else-if="textLv === '适中'">
+            <span class="item-title">适中</span>：骨盆灵活度正常。
+          </div>
+          <div class="item" v-else>
             <span class="item-title">过高</span
-            >：骨盆的灵活度过高，与腰椎不稳、遗传等因素有
-            关，可能会导致慢性腰痛、腰椎间盘突出、骶髂关节疼
-            痛等问题，需要加强腰椎的静态训练和对骨盆的控制。
+            >：骨盆的灵活度过高，与腰椎不稳、遗传等因素有关，可能会导致慢性腰痛、腰椎间盘突出、骶髂关节疼痛等问题，需要加强腰椎的静态训练和对骨盆的控制。
           </div>
         </div>
       </div>
@@ -296,11 +295,13 @@ export default {
         .content {
           margin-left: 60px;
           .title {
-            font-size: 46px;
+            font-size: 70px;
             margin-bottom: 50px;
           }
           .item {
             margin-bottom: 20px;
+            font-weight: 700;
+            font-size: 18px;
             .item-val {
               color: green;
             }
@@ -313,11 +314,11 @@ export default {
         padding-right: 6%;
         @include flex(column, center, stretch);
         .title {
-          font-size: 34px;
+          font-size: 48px;
           color: green;
         }
         .item {
-          font-size: 22px;
+          font-size: 28px;
           margin-top: 15px;
           .item-title {
             font-weight: 700;

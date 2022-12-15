@@ -1,7 +1,7 @@
 <!--
  * @Author      : Mr.bin
  * @Date        : 2022-12-12 21:31:50
- * @LastEditTime: 2022-12-14 09:37:27
+ * @LastEditTime: 2022-12-15 15:30:08
  * @Description : 静态训练-导出PDF
 -->
 <template>
@@ -38,9 +38,7 @@
             <div class="val">
               <div class="title" :style="{ color: colorLv }">{{ textLv }}</div>
               <div class="keep-time">保持时间：{{ pdfData.keepTime }}</div>
-              <div class="completion">
-                训练评分：<span class="val">{{ pdfData.completion }}</span>
-              </div>
+              <div class="completion">训练评分：{{ pdfData.completion }}</div>
               <div class="advice">{{ advice }}</div>
             </div>
           </div>
@@ -251,8 +249,8 @@ export default {
       }
 
       /* 绘制参考曲线逻辑 */
-      const up = this.pdfData.target + 5
-      const down = this.pdfData.target - 5
+      const up = this.pdfData.target + 2.5
+      const down = this.pdfData.target - 2.5
       const upArray = []
       for (let i = 0; i < this.pdfData.depthArray.length; i++) {
         upArray.push(up)
@@ -386,7 +384,7 @@ export default {
         }
         .show-img {
           width: 300px;
-          margin-bottom: 25px;
+          margin-bottom: 35px;
         }
         .bottom {
           @include flex(row, space-between, center);
@@ -395,9 +393,11 @@ export default {
 
           .val {
             width: 240px;
+            font-size: 20px;
+            font-weight: 700;
             .title {
-              font-size: 36px;
-              margin-bottom: 35px;
+              font-size: 46px;
+              margin-bottom: 30px;
             }
             .keep-time {
               margin-bottom: 3px;
