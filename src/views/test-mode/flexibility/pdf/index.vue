@@ -1,7 +1,7 @@
 <!--
  * @Author      : Mr.bin
  * @Date        : 2022-12-08 17:55:19
- * @LastEditTime: 2022-12-15 15:53:14
+ * @LastEditTime: 2022-12-16 10:20:08
  * @Description : 骨盆灵活度测试-导出PDF
 -->
 <template>
@@ -45,7 +45,8 @@
             >：骨盆的灵活度过低，可能会出现弯腰活动受限或腰背酸痛等症状，首先需要首先进行内核心肌活和活动度改善，增加腰椎灵活度的同事，掌握肌肉发力。
           </div>
           <div class="item" v-else-if="textLv === '适中'">
-            <span class="item-title">适中</span>：骨盆灵活度正常。
+            <span class="item-title">适中</span
+            >：灵活度在正常范围内，建议加强训练，保持灵活度。
           </div>
           <div class="item" v-else>
             <span class="item-title">过高</span
