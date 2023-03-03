@@ -5,7 +5,7 @@
  * @Description : energy-n14-e13-network-prone-position-spine
 -->
 
-# 核心稳定训练系统-网络版
+# 核心稳定训练系统-网络版（商用卧姿）
 
 ## 传感器
 
