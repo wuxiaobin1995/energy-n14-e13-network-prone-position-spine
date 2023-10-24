@@ -1,7 +1,7 @@
 <!--
  * @Author      : Mr.bin
  * @Date        : 2022-10-15 17:00:42
- * @LastEditTime: 2022-12-08 11:59:17
+ * @LastEditTime: 2023-10-24 14:24:43
  * @Description : 根组件
 -->
 <template>
@@ -125,7 +125,7 @@ export default {
     registerFacilityID(facilityID) {
       this.fullscreenLoading = true
       this.$axios
-        .post('/registerDevicesName_v2', {
+        .post('/registerDevicesName_v3', {
           devices_name: facilityID
         })
         .then(res => {
@@ -185,7 +185,7 @@ export default {
       const facilityID = window.localStorage.getItem('facilityID')
       this.fullscreenLoading = true
       this.$axios
-        .post('/getDevicesData_v2', {
+        .post('/getDevicesData_v3', {
           devices_name: facilityID
         })
         .then(res => {
@@ -271,7 +271,7 @@ export default {
      */
     resetOnlineTime() {
       const facilityID = window.localStorage.getItem('facilityID')
-      this.$axios.post('/resetOnlineTime_v2', {
+      this.$axios.post('/resetOnlineTime_v3', {
         devices_name: facilityID
       })
       // .then(res => {

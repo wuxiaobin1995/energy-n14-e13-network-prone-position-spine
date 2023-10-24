@@ -1,7 +1,7 @@
 <!--
  * @Author      : Mr.bin
  * @Date        : 2022-07-28 11:40:23
- * @LastEditTime: 2022-12-08 10:58:55
+ * @LastEditTime: 2023-10-24 16:24:19
  * @Description : 用户信息修改
 -->
 <template>
@@ -209,7 +209,7 @@ export default {
           this.fullscreenLoading = true
           const facilityID = window.localStorage.getItem('facilityID')
           this.$axios
-            .post('/userMessageChange_v2', {
+            .post('/userMessageChange_v3', {
               devices_name: facilityID,
               user_id: this.formData.userId,
               user_name: this.formData.userName,

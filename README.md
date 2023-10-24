@@ -1,7 +1,7 @@
 <!--
  * @Author      : Mr.bin
  * @Date        : 2022-10-15 17:01:07
- * @LastEditTime: 2022-12-07 14:31:09
+ * @LastEditTime: 2023-10-23 17:50:19
  * @Description : energy-n14-e13-network-prone-position-spine
 -->
 
@@ -21,3 +21,5 @@
   1. 重构了界面样式与布局
   2. 增加和修改一些功能
   3. 修改了语音
+- v3.0.0
+  1. 跟随医用卧姿功能大更新

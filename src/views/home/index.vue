@@ -1,29 +1,24 @@
 <!--
  * @Author      : Mr.bin
  * @Date        : 2022-10-17 17:38:01
- * @LastEditTime: 2022-12-14 11:06:46
+ * @LastEditTime: 2023-10-24 15:49:07
  * @Description : home
 -->
 <template>
   <div class="home">
     <div class="wrapper">
+      <!-- 设备实物图 -->
       <div class="main-photo">
         <el-image class="item0" :src="src0" fit="scale-down"></el-image>
       </div>
+
+      <!-- 上行 -->
       <div class="one">
         <el-image
           class="item item3"
           :src="src3"
           fit="scale-down"
           @click.native="handleClick('src3')"
-        ></el-image>
-      </div>
-      <div class="two">
-        <el-image
-          class="item item2"
-          :src="src2"
-          fit="scale-down"
-          @click.native="handleClick('src2')"
         ></el-image>
         <el-image
           class="item item4"
@@ -32,12 +27,13 @@
           @click.native="handleClick('src4')"
         ></el-image>
       </div>
-      <div class="three">
+      <!-- 中行 -->
+      <div class="two">
         <el-image
-          class="item item1"
-          :src="src1"
+          class="item item2"
+          :src="src2"
           fit="scale-down"
-          @click.native="handleClick('src1')"
+          @click.native="handleClick('src2')"
         ></el-image>
         <el-image
           class="item item5"
@@ -46,11 +42,26 @@
           @click.native="handleClick('src5')"
         ></el-image>
       </div>
+      <!-- 下行 -->
+      <div class="three">
+        <el-image
+          class="item item1"
+          :src="src1"
+          fit="scale-down"
+          @click.native="handleClick('src1')"
+        ></el-image>
+        <el-image
+          class="item item6"
+          :src="src6"
+          fit="scale-down"
+          @click.native="handleClick('src6')"
+        ></el-image>
+      </div>
 
       <!-- 数据记录选择弹窗 -->
       <el-dialog
         :visible.sync="centerDialogVisible"
-        width="45%"
+        width="50%"
         center
         top="35vh"
         :show-close="false"
@@ -61,6 +72,9 @@
           >
           <el-button class="btn" type="primary" @click="handleGoTrainRecord"
             >训练记录</el-button
+          >
+          <el-button class="btn" type="warning" @click="handleGoTrainPlanRecord"
+            >方案记录</el-button
           >
         </div>
       </el-dialog>
@@ -115,11 +129,13 @@ export default {
   data() {
     return {
       src0: require('@/assets/img/Home/设备实物.png'),
+
       src1: require('@/assets/img/Home/用户.png'),
       src2: require('@/assets/img/Home/测试模块.png'),
       src3: require('@/assets/img/Home/训练模块.png'),
-      src4: require('@/assets/img/Home/数据记录.png'),
-      src5: require('@/assets/img/Home/游戏.png'),
+      src4: require('@/assets/img/Home/训练方案.png'),
+      src5: require('@/assets/img/Home/数据记录.png'),
+      src6: require('@/assets/img/Home/游戏.png'),
 
       centerDialogVisible: false, // 数据记录选择弹窗
 
@@ -138,11 +154,14 @@ export default {
      * @param {String} src
      */
     handleClick(src) {
+      // 用户
       if (src === 'src1') {
         this.$router.push({
           path: '/user'
         })
-      } else if (src === 'src2') {
+      }
+      // 测试模块
+      else if (src === 'src2') {
         if (this.$store.state.currentUserInfo.userId) {
           this.$router.push({
             path: '/test-flexibility-show'
@@ -165,18 +184,20 @@ export default {
             })
             .catch(() => {})
         }
-      } else if (src === 'src3') {
+      }
+      // 训练模块
+      else if (src === 'src3') {
         if (this.$store.state.currentUserInfo.userId) {
           if (
             this.$store.state.bothFlexibility.maxDepth !== null &&
             this.$store.state.bothFlexibility.minDepth !== null
           ) {
             this.$router.push({
-              path: '/train-select/core-activation-set'
+              path: '/train-select/abdominal-respiration-set'
             })
           } else {
             this.$confirm(
-              `检测到您没有最大和最小灵活度测量值，请先进行"骨盆灵活度测试"`,
+              `检测到您没有最大和最小腰椎活动度的值，请先进行"活动度测试"`,
               '提示',
               {
                 type: 'warning',
@@ -210,7 +231,56 @@ export default {
             })
             .catch(() => {})
         }
-      } else if (src === 'src4') {
+      }
+      // 训练方案
+      else if (src === 'src4') {
+        if (this.$store.state.currentUserInfo.userId) {
+          if (
+            this.$store.state.bothFlexibility.maxDepth !== null &&
+            this.$store.state.bothFlexibility.minDepth !== null
+          ) {
+            this.$router.push({
+              path: '/train-plan'
+            })
+          } else {
+            this.$confirm(
+              `检测到您没有最大和最小腰椎活动度的值，请先进行"活动度测试"`,
+              '提示',
+              {
+                type: 'warning',
+                center: true,
+                showCancelButton: false,
+                confirmButtonText: '确 定'
+              }
+            )
+              .then(() => {
+                this.$router.push({
+                  path: '/test-flexibility-show'
+                })
+              })
+              .catch(() => {})
+          }
+        } else {
+          this.$confirm(
+            `检测到您还没有选择用户，请先到用户页面进行选择！`,
+            '提示',
+            {
+              type: 'warning',
+              center: true,
+              showCancelButton: false,
+              confirmButtonText: '确 定'
+            }
+          )
+            .then(() => {
+              this.$router.push({
+                path: '/user'
+              })
+            })
+            .catch(() => {})
+        }
+      }
+      // 数据记录
+      else if (src === 'src5') {
         if (this.$store.state.currentUserInfo.userId) {
           this.centerDialogVisible = true
         } else {
@@ -231,7 +301,9 @@ export default {
             })
             .catch(() => {})
         }
-      } else if (src === 'src5') {
+      }
+      // 游戏
+      else if (src === 'src6') {
         if (this.$store.state.currentUserInfo.userId) {
           this.$router.push({
             path: '/game'
@@ -304,6 +376,12 @@ export default {
      */
     handleGoTrainRecord() {
       this.$router.push({ path: '/train-record' })
+    },
+    /**
+     * @description: 跳转至训练方案记录页
+     */
+    handleGoTrainPlanRecord() {
+      this.$router.push({ path: '/train-plan-record' })
     }
   }
 }
@@ -323,41 +401,48 @@ export default {
     box-shadow: 0 0 10px #929292;
     position: relative;
 
-    .item0 {
-      width: 560px;
-    }
-    .item {
-      width: 130px;
-    }
-
+    /* 设备实物图 */
     .main-photo {
       position: absolute;
       left: 50%;
       transform: translateX(-50%);
-      bottom: 20px;
+      bottom: 40px;
+      .item0 {
+        width: 480px;
+      }
     }
     .one {
       margin-top: 30px;
       @include flex(row, center, center);
-    }
-    .two {
-      @include flex(row, center, center);
-      .item2 {
-        margin-right: 260px;
+      .item3 {
+        margin-right: 70px;
       }
       .item4 {
-        margin-left: 260px;
+        margin-left: 70px;
+      }
+    }
+    .two {
+      margin-top: 10px;
+      @include flex(row, center, center);
+      .item2 {
+        margin-right: 280px;
+      }
+      .item5 {
+        margin-left: 280px;
       }
     }
     .three {
-      margin-top: 60px;
+      margin-top: 50px;
       @include flex(row, center, center);
       .item1 {
-        margin-right: 420px;
+        margin-right: 430px;
       }
-      .item5 {
-        margin-left: 420px;
+      .item6 {
+        margin-left: 430px;
       }
+    }
+    .item {
+      width: 130px;
     }
 
     /* 数据记录选择弹窗 */

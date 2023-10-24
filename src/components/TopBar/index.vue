@@ -1,7 +1,7 @@
 <!--
  * @Author      : Mr.bin
  * @Date        : 2022-10-17 15:05:53
- * @LastEditTime: 2022-12-07 17:53:35
+ * @LastEditTime: 2023-10-23 17:51:31
  * @Description : 顶部栏
 -->
 <template>
@@ -14,7 +14,7 @@
         fit="scale-down"
         @click.native="handleToHome"
       ></el-image>
-      <span class="text">核心稳定训练系统-网络版 v2.0.0</span>
+      <span class="text">核心稳定训练系统-网络版 v3.0.0</span>
     </div>
 
     <!-- 其他 -->

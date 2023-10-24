@@ -1,8 +1,8 @@
 <!--
  * @Author      : Mr.bin
  * @Date        : 2022-12-08 16:13:32
- * @LastEditTime: 2022-12-10 09:20:16
- * @Description : 骨盆灵活度测试-测量页面
+ * @LastEditTime: 2023-10-24 17:52:03
+ * @Description : 活动度测试-测量页面
 -->
 <template>
   <div
@@ -13,7 +13,7 @@
       <!-- 左半部 -->
       <div class="left">
         <div class="top">
-          <div class="title">骨盆灵活度测试</div>
+          <div class="title">活动度测试</div>
           <div class="text">
             <div class="item">
               缓慢上抬腰腹部至最高，随后缓慢下压至最低，重复3次
@@ -61,16 +61,34 @@
 
       <!-- 右半部 -->
       <div class="right">
-        <div class="text">示意图</div>
+        <div class="text">示意动作</div>
         <div class="img">
-          <el-image :src="imgSrc" fit="scale-down"></el-image>
+          <el-image
+            :src="imgSrc"
+            fit="scale-down"
+            @click.native="handleAmplify"
+          ></el-image>
         </div>
 
         <div class="result">
-          <div>灵活度：{{ flexibility ? flexibility : '待测量' }}</div>
-          <div>备注：到达时间自动结束</div>
+          <div>活动度：{{ flexibility ? flexibility : '待测量' }}</div>
+          <div :style="{ 'margin-top': '20px', color: 'green' }">
+            推荐值：30~40
+          </div>
         </div>
       </div>
+
+      <!-- 图示放大弹窗 -->
+      <el-dialog
+        title="图 示"
+        :visible.sync="imgDialogVisible"
+        width="30%"
+        center
+      >
+        <div class="img-dialog">
+          <el-image :src="imgSrc" fit="scale-down"></el-image>
+        </div>
+      </el-dialog>
     </div>
   </div>
 </template>
@@ -102,11 +120,13 @@ export default {
       isFinished: false, // 是否完成该次测试
 
       /* 其他 */
-      imgSrc: require('@/assets/img/Test/Flexibility/测量曲线预览图.png'),
+      imgSrc: require('@/assets/img/Test/Flexibility/活动度测试-动作展示.gif'),
       fullscreenLoading: false,
 
+      imgDialogVisible: false, // 图示弹窗
+
       depthArray: [], // 数据数组
-      flexibility: '', // 灵活度
+      flexibility: '', // 活动度
       dataId: '' // 后端数据库中数据的唯一id
     }
   },
@@ -127,6 +147,13 @@ export default {
   },
 
   methods: {
+    /**
+     * @description: 图示放大
+     */
+    handleAmplify() {
+      this.imgDialogVisible = true
+    },
+
     /**
      * @description: 初始化串口对象
      */
@@ -300,7 +327,7 @@ export default {
           this.fullscreenLoading = true
           const facilityID = window.localStorage.getItem('facilityID')
           this.$axios
-            .post('/saveTestRecord_v2', {
+            .post('/saveTestRecord_v3', {
               devices_name: facilityID,
               user_id: this.$store.state.currentUserInfo.userId,
               flexibility: this.flexibility,
@@ -536,6 +563,11 @@ export default {
         margin-top: 12vh;
         font-size: 22px;
       }
+    }
+
+    .img-dialog {
+      @include flex(row, center, center);
+      transform: scale(2);
     }
   }
 }

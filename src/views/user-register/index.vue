@@ -1,7 +1,7 @@
 <!--
  * @Author      : Mr.bin
  * @Date        : 2022-07-28 11:39:15
- * @LastEditTime: 2022-12-08 09:29:57
+ * @LastEditTime: 2023-10-24 16:24:07
  * @Description : 用户注册
 -->
 <template>
@@ -207,7 +207,7 @@ export default {
           this.fullscreenLoading = true
           const facilityID = window.localStorage.getItem('facilityID')
           this.$axios
-            .post('/registerUserName_v2', {
+            .post('/registerUserName_v3', {
               devices_name: facilityID,
               user_name: this.formData.userName,
               sex: this.formData.sex === '男' ? 1 : 0,

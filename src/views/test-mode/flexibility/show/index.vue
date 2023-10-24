@@ -1,8 +1,8 @@
 <!--
  * @Author      : Mr.bin
  * @Date        : 2022-12-08 14:37:53
- * @LastEditTime: 2022-12-15 10:07:24
- * @Description : 骨盆灵活度测试-动作展示
+ * @LastEditTime: 2023-10-24 17:33:44
+ * @Description : 活动度测试-动作展示
 -->
 <template>
   <div class="test-flexibility-show">
@@ -19,8 +19,8 @@
 
       <div class="top">
         <div class="left">
-          <div class="title">骨盆灵活度测试</div>
-          <div class="text">测试目的：检查骨盆是否处于正常范围</div>
+          <div class="title">活动度测试</div>
+          <div class="text">测试目的：检查腰椎的灵活性</div>
         </div>
         <el-button icon="el-icon-search" type="warning" @click="handleDes"
           >查看内核心介绍</el-button
@@ -28,10 +28,12 @@
       </div>
 
       <div class="show">
-        <div class="text">动作展示</div>
-        <div class="gif">
-          <el-image class="item" :src="showImg" fit="scale-down"></el-image>
-        </div>
+        <el-image
+          class="item"
+          :src="showImg"
+          fit="scale-down"
+          @click.native="handleAmplify"
+        ></el-image>
       </div>
 
       <div class="btn">
@@ -39,6 +41,18 @@
           >开 始 测 试</el-button
         >
       </div>
+
+      <!-- 图示放大弹窗 -->
+      <el-dialog
+        title="图 示"
+        :visible.sync="imgDialogVisible"
+        width="30%"
+        center
+      >
+        <div class="img-dialog">
+          <el-image :src="showImg" fit="scale-down"></el-image>
+        </div>
+      </el-dialog>
     </div>
   </div>
 </template>
@@ -52,11 +66,13 @@ export default {
 
   data() {
     return {
-      showImg: require('@/assets/img/Test/Flexibility/骨盆灵活度测试-动作展示.gif'),
+      showImg: require('@/assets/img/Test/Flexibility/活动度测试-动作展示.gif'),
+
+      imgDialogVisible: false, // 图示弹窗
 
       /* 语音相关 */
       audioOpen: this.$store.state.voiceSwitch,
-      audioSrc: path.join(__static, `narrate/mandarin/骨盆灵活度测试.mp3`)
+      audioSrc: path.join(__static, `narrate/mandarin/Test/活动度测试.mp3`)
     }
   },
 
@@ -77,6 +93,13 @@ export default {
       this.$router.push({
         path: '/home'
       })
+    },
+
+    /**
+     * @description: 图示放大
+     */
+    handleAmplify() {
+      this.imgDialogVisible = true
     },
 
     /**
@@ -138,18 +161,10 @@ export default {
 
     .show {
       flex: 1;
-      @include flex(row, stretch, center);
-      .text {
-        width: 25%;
-        @include flex(row, center, center);
-        font-size: 26px;
-        font-weight: 700;
-      }
-      .gif {
-        flex: 1;
-        .item {
-          width: 70%;
-        }
+      @include flex(row, center, center);
+      .item {
+        transform: scale(1.5);
+        border: 1px solid black;
       }
     }
 
@@ -159,6 +174,11 @@ export default {
         font-size: 28px;
         width: 240px;
       }
+    }
+
+    .img-dialog {
+      @include flex(row, center, center);
+      transform: scale(2);
     }
   }
 }

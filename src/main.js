@@ -1,7 +1,7 @@
 /*
  * @Author      : Mr.bin
  * @Date        : 2022-10-15 17:00:42
- * @LastEditTime: 2022-10-18 09:10:55
+ * @LastEditTime: 2023-10-24 14:09:10
  * @Description : 渲染进程入口
  */
 import Vue from 'vue'
@@ -26,10 +26,12 @@ import { instance } from '@/api/index.js'
 import { htmlToPdf } from '@/utils/htmlToPdf.js'
 /* 引入进度条插件 */
 import QProgress from 'qier-progress'
+
 // /* 引入日志文件 */
 // import { getLogger } from '@/utils/log4js.js'
 /* 引入初始化数据库 */
 // import { initDB } from '@/db/index.js'
+
 // /* 引入样式重置表和acss，建议放最后 */
 import '@/style/cover-output.scss'
 
@@ -44,6 +46,7 @@ Vue.prototype.$moment = moment
 Vue.prototype.$axios = instance
 /* 使用封装好的PDF插件 */
 Vue.prototype.$htmlToPdf = htmlToPdf
+
 // /* 使用日志文件 */
 // Vue.prototype.$getLogger = getLogger
 // /* 使用数据库 */
@@ -52,6 +55,7 @@ Vue.prototype.$htmlToPdf = htmlToPdf
 //   .catch(() => {
 //     alert('打开数据库失败，请重启软件')
 //   })
+
 /* 使用进度条插件 */
 const qprogress = new QProgress()
 router.beforeEach((to, from, next) => {

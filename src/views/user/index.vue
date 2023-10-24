@@ -1,7 +1,7 @@
 <!--
  * @Author      : Mr.bin
  * @Date        : 2022-07-28 11:35:59
- * @LastEditTime: 2022-12-13 09:41:54
+ * @LastEditTime: 2023-10-24 16:23:03
  * @Description : 用户
 -->
 <template>
@@ -219,7 +219,7 @@ export default {
       this.tableLoading = true
       const facilityID = window.localStorage.getItem('facilityID')
       this.$axios
-        .post('/getUserList_v2', {
+        .post('/getUserList_v3', {
           devices_name: facilityID
         })
         .then(res => {
@@ -390,7 +390,7 @@ export default {
           this.fullscreenLoading = true
           const facilityID = window.localStorage.getItem('facilityID')
           this.$axios
-            .post('/userDelete_v2', {
+            .post('/userDelete_v3', {
               devices_name: facilityID,
               user_id: row.userId
             })
@@ -516,7 +516,7 @@ export default {
         this.fullscreenLoading = true
         const facilityID = window.localStorage.getItem('facilityID')
         this.$axios
-          .post('/userLogin_v2', {
+          .post('/userLogin_v3', {
             devices_name: facilityID,
             user_id: row.userId
           })

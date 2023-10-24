@@ -1,8 +1,8 @@
 <!--
  * @Author      : Mr.bin
  * @Date        : 2022-12-08 14:38:48
- * @LastEditTime: 2022-12-08 16:07:53
- * @Description : 骨盆灵活度测试-内核心是什么
+ * @LastEditTime: 2023-10-24 17:34:08
+ * @Description : 活动度测试-内核心是什么
 -->
 <template>
   <div class="test-flexibility-what">
