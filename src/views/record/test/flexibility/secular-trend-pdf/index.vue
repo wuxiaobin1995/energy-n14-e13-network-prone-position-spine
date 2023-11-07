@@ -1,8 +1,8 @@
 <!--
  * @Author      : Mr.bin
  * @Date        : 2022-12-14 10:13:00
- * @LastEditTime: 2022-12-14 17:26:24
- * @Description : 骨盆灵活度测试-导出长期趋势PDF
+ * @LastEditTime: 2023-10-25 09:55:54
+ * @Description : 活动度测试-导出长期趋势PDF
 -->
 <template>
   <div
@@ -14,7 +14,7 @@
       <div class="top">
         <el-image class="logo" :src="logoSrc" fit="scale-down"></el-image>
 
-        <div class="title">骨盆灵活度测试-长期趋势报告</div>
+        <div class="title">活动度测试-长期趋势报告</div>
 
         <div class="divider"></div>
 
@@ -62,13 +62,15 @@ export default {
 
       /* 其他 */
       fullscreenLoading: false,
+
       logoSrc: require('@/assets/img/Company_Logo/logo_1.png'), // 公司商标
+
       userName: this.$store.state.currentUserInfo.userName,
       sex: this.$store.state.currentUserInfo.sex,
       hospital: window.localStorage.getItem('hospital')
         ? window.localStorage.getItem('hospital')
         : '未设置医院',
-      flexibilityArray: [] // 灵活度数组
+      flexibilityArray: [] // 活动度数组
     }
   },
 
@@ -84,7 +86,7 @@ export default {
       this.fullscreenLoading = true
       const facilityID = window.localStorage.getItem('facilityID')
       this.$axios
-        .post('/getTestRecordByType_v2', {
+        .post('/getTestRecordByType_v3', {
           devices_name: facilityID,
           user_id: this.$store.state.currentUserInfo.userId,
           type: 'flexibility'
@@ -170,7 +172,7 @@ export default {
         })
         .catch(err => {
           this.$confirm(
-            `[骨盆灵活度测试-长期趋势报告环节] ${err}。请确保网络连接正常！`,
+            `[活动度测试-长期趋势报告环节] ${err}。请确保网络连接正常！`,
             '网络请求错误',
             {
               type: 'error',
@@ -215,7 +217,7 @@ export default {
         legend: {},
         series: [
           {
-            name: '骨盆灵活度',
+            name: '活动度',
             data: this.flexibilityArray,
             color: 'green',
             type: 'line',
@@ -234,7 +236,7 @@ export default {
     handlePdf() {
       this.$htmlToPdf(
         'pdf',
-        `骨盆灵活度测试-长期趋势报告 ${this.$moment().format(
+        `活动度测试-长期趋势报告 ${this.$moment().format(
           'YYYY-MM-DD HH_mm_ss'
         )}`,
         500

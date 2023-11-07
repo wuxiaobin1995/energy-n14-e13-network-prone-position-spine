@@ -1,7 +1,7 @@
 <!--
  * @Author      : Mr.bin
  * @Date        : 2022-12-12 21:31:50
- * @LastEditTime: 2022-12-15 15:29:32
+ * @LastEditTime: 2023-10-25 14:16:41
  * @Description : 腹式呼吸训练-导出PDF
 -->
 <template>
@@ -37,9 +37,9 @@
           <el-image :src="lv" fit="scale-down"></el-image>
           <div class="val">
             <div class="title" :style="{ color: colorLv }">{{ textLv }}</div>
-            <div class="num">训练个数：{{ pdfData.num }}</div>
-            <div class="completion">训练评分：{{ pdfData.completion }}</div>
-            <div class="advice">{{ advice }}</div>
+            <div class="item">综合训练评分：{{ pdfData.completion }}分</div>
+            <div class="item">训练时长：{{ pdfData.trainTime }}</div>
+            <div class="item">{{ advice }}</div>
           </div>
         </div>
       </div>
@@ -74,6 +74,7 @@ export default {
       option: {},
       xData: [], // 横坐标数组
 
+      /* 其他 */
       fullscreenLoading: false,
 
       logoSrc: require('@/assets/img/Company_Logo/logo_1.png'), // 公司商标
@@ -89,23 +90,22 @@ export default {
       pdfData: {
         userName: '',
         sex: '',
-        pdfTime: '',
-        completion: '', // 完成度
-        num: '', // 训练个数
+
         targetUp: '', // 上限
         targetDown: '', // 下限
+
+        midpoint: '', // 活动度中点
+        trainTime: '', // 训练时长
+
         depthArray: [], // 数据数组
-        midpoint: '', // 中点
-        target: '', // 下压目标
-        keepTime: '', // 保持时间
-        restTime: '' // 休息时间
+        completion: '', // 完成度
+
+        pdfTime: ''
       },
+
       hospital: window.localStorage.getItem('hospital')
         ? window.localStorage.getItem('hospital')
-        : '未设置医院',
-
-      standardArray: [], // 基础参考曲线
-      fullArray: [] // 完整参考曲线
+        : '未设置医院'
     }
   },
 
@@ -115,12 +115,12 @@ export default {
 
   methods: {
     /**
-     * @description: 从后端通过 train_record_id 获取一条训练数据
+     * @description: 从后端通过 train_plan_record_id 获取一条训练数据
      */
     getOnlyData() {
       this.fullscreenLoading = true
       this.$axios
-        .post('/getOneTrainRecord_v2', {
+        .post('/getOneTrainRecord_v3', {
           train_record_id: this.dataId
         })
         .then(res => {
@@ -129,16 +129,18 @@ export default {
             /* 成功 */
             this.pdfData.userName = data.result.user_name
             this.pdfData.sex = data.result.sex === 1 ? '男' : '女'
-            this.pdfData.pdfTime = data.result.create_time
-            this.pdfData.depthArray = JSON.parse(data.result.record_array)
-            this.pdfData.completion = data.result.completion
-            this.pdfData.num = data.result.number_target
-            this.pdfData.targetUp = data.result.upper_limit
-            this.pdfData.targetDown = data.result.lower_limit
+
+            this.pdfData.targetUp = data.result.targetUp
+            this.pdfData.targetDown = data.result.targetDown
             this.pdfData.midpoint = data.result.midpoint
-            this.pdfData.target = data.result.press_down
-            this.pdfData.keepTime = data.result.keep_time
-            this.pdfData.restTime = data.result.rest_time
+            this.pdfData.trainTime = data.result.trainTime
+
+            this.pdfData.depthArray = JSON.parse(data.result.depthArray)
+            this.pdfData.bgUpArray = JSON.parse(data.result.bgUpArray)
+            this.pdfData.bgDownArray = JSON.parse(data.result.bgDownArray)
+            this.pdfData.completion = data.result.completion
+
+            this.pdfData.pdfTime = data.result.create_time
 
             /* 根据不同的评分动态变化显示 */
             if (this.pdfData.completion < 40) {
@@ -169,9 +171,8 @@ export default {
               this.colorLv = '#07B9B9'
             }
 
-            this.countChart().then(() => {
-              this.initChart()
-            })
+            // 渲染图像
+            this.initChart()
           } else if (data.status === 0) {
             /* 失败 */
             this.$confirm(
@@ -236,66 +237,15 @@ export default {
     },
 
     /**
-     * @description: 计算图形所需参数逻辑函数
-     */
-    countChart() {
-      return new Promise((resolve, reject) => {
-        const midpoint = this.pdfData.midpoint // 中点
-        const target = this.pdfData.target // 下压目标
-        const restTime = this.pdfData.restTime // 休息时间
-        const keepTime = this.pdfData.keepTime // 保持时间
-
-        const restTimeArray = []
-        for (let i = 0; i < restTime * 10 + 1; i++) {
-          restTimeArray.push(midpoint)
-        }
-
-        const interval = parseFloat(((midpoint - target) / 10).toFixed(3)) // 间隔值
-
-        const downArray = []
-        let downSum = midpoint
-        for (let i = 0; i < 9; i++) {
-          downSum = downSum - interval
-          downArray.push(downSum)
-        }
-
-        const keepTimeArray = []
-        for (let i = 0; i < keepTime * 10 + 1; i++) {
-          keepTimeArray.push(target)
-        }
-
-        const upArray = []
-        let upSum = target
-        for (let i = 0; i < 9; i++) {
-          upSum = upSum + interval
-          upArray.push(upSum)
-        }
-
-        this.standardArray = restTimeArray.concat(
-          downArray,
-          keepTimeArray,
-          upArray
-        )
-
-        this.fullArray = []
-        for (let i = 0; i < this.pdfData.num; i++) {
-          this.fullArray.push(...this.standardArray)
-        }
-
-        /* x轴 */
-        this.xData = []
-        for (let i = 0; i < this.fullArray.length; i++) {
-          this.xData.push(parseFloat((i * 0.1).toFixed(1)))
-        }
-
-        resolve()
-      })
-    },
-
-    /**
      * @description: 初始化echarts图形
      */
     initChart() {
+      /* x轴 */
+      this.xData = []
+      for (let i = 0; i < this.pdfData.trainTime * 10; i++) {
+        this.xData.push(parseFloat((i * 0.1).toFixed(1)))
+      }
+
       this.myChart = this.$echarts.init(document.getElementById('chart'))
       this.option = {
         xAxis: {
@@ -309,7 +259,7 @@ export default {
           splitLine: {
             show: false // 隐藏背景网格线
           },
-          min: this.pdfData.target - 10 >= 0 ? this.pdfData.target - 10 : 0,
+          min: this.pdfData.midpoint - 10 >= 0 ? this.pdfData.midpoint - 10 : 0,
           max: this.pdfData.midpoint + 10
         },
         legend: {},
@@ -323,9 +273,17 @@ export default {
             showSymbol: false
           },
           {
-            name: `参考曲线(${this.pdfData.target}~${this.pdfData.midpoint})`,
-            data: this.fullArray,
-            color: 'rgba(0, 255, 0, 0.5)',
+            name: `上限曲线(${this.pdfData.midpoint + 5})`,
+            data: this.pdfData.bgUpArray,
+            color: 'green',
+            type: 'line',
+            smooth: false,
+            showSymbol: false
+          },
+          {
+            name: `下限曲线(${this.pdfData.midpoint - 5})`,
+            data: this.pdfData.bgDownArray,
+            color: 'green',
             type: 'line',
             smooth: false,
             showSymbol: false
@@ -417,13 +375,7 @@ export default {
             font-size: 46px;
             margin-bottom: 30px;
           }
-          .num {
-            margin-bottom: 3px;
-          }
-          .completion {
-            margin-bottom: 3px;
-          }
-          .advice {
+          .item {
             margin-bottom: 3px;
           }
         }

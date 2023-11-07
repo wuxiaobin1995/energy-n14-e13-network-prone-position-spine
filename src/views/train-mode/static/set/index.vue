@@ -1,21 +1,16 @@
 <!--
  * @Author      : Mr.bin
  * @Date        : 2022-12-09 21:42:38
- * @LastEditTime: 2022-12-12 20:46:38
- * @Description : 静态训练-参数设置
+ * @LastEditTime: 2023-10-26 16:19:09
+ * @Description : 静态稳定训练-参数设置
 -->
 <template>
   <div class="static-set">
-    <!-- 语音播放 -->
-    <audio ref="audio" controls="controls" hidden :src="audioSrc" />
-
     <!-- 文字说明 -->
     <div class="des">
+      <div class="item">训练目的：增强腰椎稳定性</div>
       <div class="item">
-        训练目的：收紧腹部核心力量，通过增加腹部肌肉包裹性，提高腰椎稳定度，改善产后体态问题，从而达到塑形瘦身、体态调整
-      </div>
-      <div class="item">
-        动作要求：首先将光标移动到绿色区域内，随后腰腹部持续收紧使光标不晃动，上下肢保持一个指定动作，过程中肩部和臀部紧贴软底按，直至训练结束
+        动作要求：控制光标移动到绿色区域内，持续收紧腰腹部使光标不晃动，过程中肩部和臀部紧贴软垫，直至训练结束
       </div>
     </div>
 
@@ -23,20 +18,24 @@
     <div class="main">
       <!-- 参数设置 -->
       <div class="set">
-        <!-- 保持时间 -->
-        <div class="set__one">
-          <span class="text">保持时间</span>
-          <el-input-number
-            v-model="keepTime"
-            :precision="0"
-            :step="1"
-            :min="10"
-            :max="90"
-          ></el-input-number>
+        <!-- 目标范围 -->
+        <div class="item">
+          <span class="text">目标范围</span>
+          <el-select
+            v-model="scope"
+            placeholder="目标范围"
+            @change="handleChangeScope"
+          >
+            <el-option
+              v-for="item in options"
+              :key="item.value"
+              :value="item.value"
+            >
+            </el-option>
+          </el-select>
         </div>
-
         <!-- 训练目标 -->
-        <div class="set__two">
+        <div class="item">
           <span class="text">训练目标</span>
           <el-input-number
             v-model="target"
@@ -45,6 +44,39 @@
             :min="0"
             :max="100"
             @change="handleChangeTarget"
+          ></el-input-number>
+        </div>
+        <!-- 训练时长 -->
+        <div class="item">
+          <span class="text">训练时长</span>
+          <el-input-number
+            v-model="keepTime"
+            :precision="0"
+            :step="1"
+            :min="10"
+            :max="600"
+          ></el-input-number>
+        </div>
+        <!-- 训练组数 -->
+        <div class="item">
+          <span class="text">训练组数</span>
+          <el-input-number
+            v-model="groups"
+            :precision="0"
+            :step="1"
+            :min="2"
+            :max="10"
+          ></el-input-number>
+        </div>
+        <!-- 组间休息时长 -->
+        <div class="item">
+          <span class="text">组间休息时长</span>
+          <el-input-number
+            v-model="groupRestTime"
+            :precision="0"
+            :step="1"
+            :min="30"
+            :max="120"
           ></el-input-number>
         </div>
       </div>
@@ -67,15 +99,27 @@
       <div class="action">
         <div class="item">
           <el-radio v-model="action" label="1" border>动作一</el-radio>
-          <el-image :src="oneSrc" fit="scale-down"></el-image>
+          <el-image
+            :src="oneSrc"
+            fit="scale-down"
+            @click.native="handleAmplifyOne"
+          ></el-image>
         </div>
         <div class="item">
           <el-radio v-model="action" label="2" border>动作二</el-radio>
-          <el-image :src="twoSrc" fit="scale-down"></el-image>
+          <el-image
+            :src="twoSrc"
+            fit="scale-down"
+            @click.native="handleAmplifyTwo"
+          ></el-image>
         </div>
         <div class="item">
           <el-radio v-model="action" label="3" border>动作三</el-radio>
-          <el-image :src="threeSrc" fit="scale-down"></el-image>
+          <el-image
+            :src="threeSrc"
+            fit="scale-down"
+            @click.native="handleAmplifyThree"
+          ></el-image>
         </div>
       </div>
     </div>
@@ -89,13 +133,44 @@
         >刷新页面</el-button
       >
     </div>
+
+    <!-- 图示1放大弹窗 -->
+    <el-dialog
+      title="图 示"
+      :visible.sync="imgDialogVisibleOne"
+      width="30%"
+      center
+    >
+      <div class="img-dialog">
+        <el-image :src="oneSrc" fit="scale-down"></el-image>
+      </div>
+    </el-dialog>
+    <!-- 图示2放大弹窗 -->
+    <el-dialog
+      title="图 示"
+      :visible.sync="imgDialogVisibleTwo"
+      width="30%"
+      center
+    >
+      <div class="img-dialog">
+        <el-image :src="twoSrc" fit="scale-down"></el-image>
+      </div>
+    </el-dialog>
+    <!-- 图示3放大弹窗 -->
+    <el-dialog
+      title="图 示"
+      :visible.sync="imgDialogVisibleThree"
+      width="30%"
+      center
+    >
+      <div class="img-dialog">
+        <el-image :src="threeSrc" fit="scale-down"></el-image>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-/* 路径模块 */
-import path from 'path'
-
 /* 串口通信库 */
 import SerialPort from 'serialport'
 import Readline from '@serialport/parser-readline'
@@ -105,10 +180,6 @@ export default {
 
   data() {
     return {
-      /* 语音相关 */
-      audioOpen: this.$store.state.voiceSwitch,
-      audioSrc: path.join(__static, `narrate/mandarin/静态训练.mp3`),
-
       /* 串口相关变量 */
       usbPort: null,
       parser: null,
@@ -118,31 +189,43 @@ export default {
       twoSrc: require('@/assets/img/Train/Static/2.png'),
       threeSrc: require('@/assets/img/Train/Static/3.png'),
 
+      imgDialogVisibleOne: false, // 图示1弹窗
+      imgDialogVisibleTwo: false, // 图示2弹窗
+      imgDialogVisibleThree: false, // 图示3弹窗
+
       /* 其他 */
       action: '1', // 动作选择
-      keepTime: 10, // 保持时间，10~90
-      // 训练目标，默认取上下限的中间值
+      keepTime: 30, // 训练时长，10~600
       target: parseInt(
         (this.$store.state.bothFlexibility.maxDepth +
           this.$store.state.bothFlexibility.minDepth) /
           2
-      ),
+      )
+        ? parseInt(
+            (this.$store.state.bothFlexibility.maxDepth +
+              this.$store.state.bothFlexibility.minDepth) /
+              2
+          )
+        : 50, // 训练目标（默认取上下限的中间值），0~100
+      scope: 5, // 目标范围（5、10），指绿色区域的宽度
+      options: [
+        {
+          value: 5
+        },
+        {
+          value: 10
+        }
+      ],
+      groups: 3, // 训练组数，2~10
+      groupRestTime: 30, // 组间休息时长(s)，30~120
 
-      core: 0 // 光标数值
+      core: 0 // 光标实时数值
     }
   },
 
   created() {
     this.updateBg()
     this.initSerialPort()
-  },
-  mounted() {
-    if (this.audioOpen === true) {
-      setTimeout(() => {
-        this.$refs.audio.currentTime = 0
-        this.$refs.audio.play()
-      }, 500)
-    }
   },
   beforeDestroy() {
     // 关闭串口
@@ -154,6 +237,40 @@ export default {
   },
 
   methods: {
+    /**
+     * @description: 返回首页
+     */
+    handleToHome() {
+      this.$router.push({
+        path: '/home'
+      })
+    },
+
+    /**
+     * @description: 图示1放大
+     */
+    handleAmplifyOne() {
+      this.imgDialogVisibleOne = true
+      this.imgDialogVisibleTwo = false
+      this.imgDialogVisibleThree = false
+    },
+    /**
+     * @description: 图示2放大
+     */
+    handleAmplifyTwo() {
+      this.imgDialogVisibleTwo = true
+      this.imgDialogVisibleOne = false
+      this.imgDialogVisibleThree = false
+    },
+    /**
+     * @description: 图示3放大
+     */
+    handleAmplifyThree() {
+      this.imgDialogVisibleThree = true
+      this.imgDialogVisibleOne = false
+      this.imgDialogVisibleTwo = false
+    },
+
     /**
      * @description: 初始化串口对象
      */
@@ -201,15 +318,14 @@ export default {
                   this.handleRefresh()
                 })
                 .catch(() => {
-                  this.$router.push({
-                    path: '/home'
-                  })
+                  this.handleToHome()
                 })
             })
 
             this.parser = this.usbPort.pipe(new Readline({ delimiter: '\n' }))
             this.parser.on('data', data => {
               const depth = parseInt(data)
+
               /* 只允许正整数和0，且[0, 100] */
               if (/^-?[0-9]\d*$/.test(depth) && depth >= 0 && depth <= 100) {
                 this.core = depth
@@ -233,9 +349,7 @@ export default {
                 this.handleRefresh()
               })
               .catch(() => {
-                this.$router.push({
-                  path: '/home'
-                })
+                this.handleToHome()
               })
           }
         })
@@ -257,11 +371,16 @@ export default {
               this.handleRefresh()
             })
             .catch(() => {
-              this.$router.push({
-                path: '/home'
-              })
+              this.handleToHome()
             })
         })
+    },
+
+    /**
+     * @description: 目标范围下拉框改变时触发
+     */
+    handleChangeScope() {
+      this.updateBg()
     },
 
     /**
@@ -276,7 +395,7 @@ export default {
      */
     updateBg() {
       const newTarget = this.target
-      const newHalfScope = 2.5
+      const newHalfScope = parseFloat((this.scope / 2).toFixed(1))
       this.bgColorObj = {
         'background-image': `linear-gradient(
           to top,
@@ -297,10 +416,12 @@ export default {
       this.$router.push({
         path: '/static-measure',
         query: {
-          halfScope: JSON.stringify(2.5),
-          target: JSON.stringify(this.target),
-          keepTime: JSON.stringify(this.keepTime),
-          action: JSON.stringify(this.action)
+          scope: JSON.stringify(this.scope), // 目标范围
+          target: JSON.stringify(this.target), // 训练目标
+          keepTime: JSON.stringify(this.keepTime), // 训练时长
+          groups: JSON.stringify(this.groups), // 训练组数
+          groupRestTime: JSON.stringify(this.groupRestTime), // 组间休息时长
+          action: JSON.stringify(this.action) // 动作
         }
       })
     },
@@ -344,16 +465,9 @@ export default {
     /* 参数设置 */
     .set {
       width: 30%;
-      @include flex(column, center, center);
-      .set__one {
-        @include flex(row, flex-start, center);
-        .text {
-          font-size: 22px;
-          margin-right: 10px;
-        }
-      }
-      .set__two {
-        margin: 100px 0;
+      @include flex(column, center, flex-start);
+      .item {
+        margin-bottom: 30px;
         @include flex(row, flex-start, center);
         .text {
           font-size: 22px;
@@ -415,6 +529,11 @@ export default {
       font-size: 26px;
       margin: 0 40px;
     }
+  }
+
+  .img-dialog {
+    @include flex(row, center, center);
+    transform: scale(2);
   }
 }
 </style>

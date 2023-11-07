@@ -1,8 +1,8 @@
 <!--
  * @Author      : Mr.bin
  * @Date        : 2022-12-14 17:35:07
- * @LastEditTime: 2022-12-14 17:38:46
- * @Description : 静态训练-导出长期趋势PDF
+ * @LastEditTime: 2023-11-07 15:12:23
+ * @Description : 静态稳定训练-导出长期趋势PDF
 -->
 <template>
   <div
@@ -14,7 +14,7 @@
       <div class="top">
         <el-image class="logo" :src="logoSrc" fit="scale-down"></el-image>
 
-        <div class="title">静态训练-长期趋势报告</div>
+        <div class="title">静态稳定训练-长期趋势报告</div>
 
         <div class="divider"></div>
 
@@ -84,7 +84,7 @@ export default {
       this.fullscreenLoading = true
       const facilityID = window.localStorage.getItem('facilityID')
       this.$axios
-        .post('/getTrainRecordByType_v2', {
+        .post('/getTrainRecordByType_v3', {
           devices_name: facilityID,
           user_id: this.$store.state.currentUserInfo.userId,
           type: 'static'
@@ -170,7 +170,7 @@ export default {
         })
         .catch(err => {
           this.$confirm(
-            `[静态训练-长期趋势报告环节] ${err}。请确保网络连接正常！`,
+            `[静态稳定训练-长期趋势报告环节] ${err}。请确保网络连接正常！`,
             '网络请求错误',
             {
               type: 'error',
@@ -234,7 +234,7 @@ export default {
     handlePdf() {
       this.$htmlToPdf(
         'pdf',
-        `静态训练-长期趋势报告 ${this.$moment().format(
+        `静态稳定训练-长期趋势报告 ${this.$moment().format(
           'YYYY-MM-DD HH_mm_ss'
         )}`,
         500

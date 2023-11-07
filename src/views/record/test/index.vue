@@ -1,7 +1,7 @@
 <!--
  * @Author      : Mr.bin
  * @Date        : 2022-12-14 11:04:42
- * @LastEditTime: 2022-12-14 11:13:27
+ * @LastEditTime: 2023-10-25 09:52:58
  * @Description : 测试-数据记录
 -->
 <template>
@@ -14,7 +14,7 @@
           round
           plain
           @click="handleFlexibility"
-          >骨盆灵活度测试</el-button
+          >活动度测试</el-button
         >
       </div>
 
@@ -33,7 +33,7 @@ export default {
 
   methods: {
     /**
-     * @description: 骨盆灵活度测试
+     * @description: 活动度测试
      */
     handleFlexibility() {
       this.$router.push({ path: '/test-record/flexibility' })

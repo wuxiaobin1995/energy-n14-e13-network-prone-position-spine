@@ -1,7 +1,7 @@
 <!--
  * @Author      : Mr.bin
  * @Date        : 2022-12-09 16:54:56
- * @LastEditTime: 2022-12-09 21:56:22
+ * @LastEditTime: 2023-10-25 11:17:22
  * @Description : 训练-项目选择
 -->
 <template>
@@ -9,14 +9,16 @@
     <div class="btn">
       <el-button
         class="item"
-        :class="[isActiveCoreActivation]"
+        :class="[isActiveAbdominalRespiration]"
         :icon="
-          isActiveCoreActivation === 'btn__active' ? 'el-icon-circle-check' : ''
+          isActiveAbdominalRespiration === 'btn__active'
+            ? 'el-icon-circle-check'
+            : ''
         "
-        type="danger"
+        type="primary"
         round
-        @click="handleCoreActivation"
-        >内核心激活训练</el-button
+        @click="handleAbdominalRespiration"
+        >腹式呼吸训练</el-button
       >
 
       <el-button
@@ -27,34 +29,42 @@
             ? 'el-icon-circle-check'
             : ''
         "
-        type="warning"
+        type="danger"
         round
         @click="handleActivityImprovement"
-        >活动度改善训练</el-button
+        >活动度训练</el-button
       >
 
       <el-button
         class="item"
-        :class="[isActiveAbdominalRespiration]"
+        :class="[isStabilizerActivation]"
         :icon="
-          isActiveAbdominalRespiration === 'btn__active'
-            ? 'el-icon-circle-check'
-            : ''
+          isStabilizerActivation === 'btn__active' ? 'el-icon-circle-check' : ''
         "
+        type="warning"
+        round
+        @click="handleStabilizerActivation"
+        >内核心激活训练</el-button
+      >
+
+      <el-button
+        class="item"
+        :class="[isDeepSensory]"
+        :icon="isDeepSensory === 'btn__active' ? 'el-icon-circle-check' : ''"
         type="success"
         round
-        @click="handleAbdominalRespiration"
-        >腹式呼吸训练</el-button
+        @click="handleDeepSensory"
+        >本体感觉训练</el-button
       >
 
       <el-button
         class="item"
         :class="[isActiveStatic]"
         :icon="isActiveStatic === 'btn__active' ? 'el-icon-circle-check' : ''"
-        type="primary"
+        type="info"
         round
         @click="handleStatic"
-        >静态训练</el-button
+        >静态稳定训练</el-button
       >
 
       <el-button
@@ -64,7 +74,7 @@
         type="info"
         round
         @click="handleDynamic"
-        >动态训练</el-button
+        >动态稳定训练</el-button
       >
     </div>
 
@@ -83,9 +93,10 @@ export default {
   data() {
     return {
       /* 动态css */
-      isActiveCoreActivation: '',
-      isActiveActivityImprovement: '',
       isActiveAbdominalRespiration: '',
+      isActiveActivityImprovement: '',
+      isStabilizerActivation: '',
+      isDeepSensory: '',
       isActiveStatic: '',
       isActiveDynamic: ''
     }
@@ -94,20 +105,25 @@ export default {
   watch: {
     '$route.path': {
       handler(newVal, oldval) {
-        if (newVal === '/train-select/core-activation-set') {
-          this.isActiveCoreActivation = 'btn__active'
+        if (newVal === '/train-select/abdominal-respiration-set') {
+          this.isActiveAbdominalRespiration = 'btn__active'
         } else {
-          this.isActiveCoreActivation = ''
+          this.isActiveAbdominalRespiration = ''
         }
         if (newVal === '/train-select/activity-improvement-set') {
           this.isActiveActivityImprovement = 'btn__active'
         } else {
           this.isActiveActivityImprovement = ''
         }
-        if (newVal === '/train-select/abdominal-respiration-set') {
-          this.isActiveAbdominalRespiration = 'btn__active'
+        if (newVal === '/train-select/stabilizer-activation-set') {
+          this.isStabilizerActivation = 'btn__active'
         } else {
-          this.isActiveAbdominalRespiration = ''
+          this.isStabilizerActivation = ''
+        }
+        if (newVal === '/train-select/deep-sensory-set') {
+          this.isDeepSensory = 'btn__active'
+        } else {
+          this.isDeepSensory = ''
         }
         if (newVal === '/train-select/static-set') {
           this.isActiveStatic = 'btn__active'
@@ -126,20 +142,6 @@ export default {
 
   methods: {
     /**
-     * @description: 内核心激活训练
-     */
-    handleCoreActivation() {
-      this.$router.push({ path: '/train-select/core-activation-set' })
-    },
-
-    /**
-     * @description: 活动度改善训练
-     */
-    handleActivityImprovement() {
-      this.$router.push({ path: '/train-select/activity-improvement-set' })
-    },
-
-    /**
      * @description: 腹式呼吸训练
      */
     handleAbdominalRespiration() {
@@ -147,14 +149,35 @@ export default {
     },
 
     /**
-     * @description: 静态训练
+     * @description: 活动度训练
+     */
+    handleActivityImprovement() {
+      this.$router.push({ path: '/train-select/activity-improvement-set' })
+    },
+
+    /**
+     * @description: 内核心激活训练
+     */
+    handleStabilizerActivation() {
+      this.$router.push({ path: '/train-select/stabilizer-activation-set' })
+    },
+
+    /**
+     * @description: 本体感觉训练
+     */
+    handleDeepSensory() {
+      this.$router.push({ path: '/train-select/deep-sensory-set' })
+    },
+
+    /**
+     * @description: 静态稳定训练
      */
     handleStatic() {
       this.$router.push({ path: '/train-select/static-set' })
     },
 
     /**
-     * @description: 动态训练
+     * @description: 动态稳定训练
      */
     handleDynamic() {
       this.$router.push({ path: '/train-select/dynamic-set' })

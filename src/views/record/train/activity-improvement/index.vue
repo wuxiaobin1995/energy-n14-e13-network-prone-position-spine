@@ -1,8 +1,8 @@
 <!--
  * @Author      : Mr.bin
  * @Date        : 2022-12-14 16:08:43
- * @LastEditTime: 2022-12-14 16:30:34
- * @Description : 活动度改善训练-数据记录
+ * @LastEditTime: 2023-11-07 15:04:53
+ * @Description : 活动度训练-数据记录
 -->
 <template>
   <div class="train-activity-improvement-record">
@@ -11,7 +11,7 @@
       <!-- 标题 -->
       <el-page-header
         title="返回首页"
-        content="活动度改善训练"
+        content="活动度训练"
         @back="handleToHome"
       ></el-page-header>
     </div>
@@ -33,7 +33,7 @@
     >
       <!-- No -->
       <el-table-column align="center" type="index" width="50"></el-table-column>
-      <!-- 测试时间 -->
+      <!-- 训练时间 -->
       <el-table-column
         align="center"
         prop="pdfTime"
@@ -41,13 +41,19 @@
         width="260"
         sortable
       ></el-table-column>
-      <!-- 训练个数 -->
+      <!-- 训练次数 -->
       <el-table-column
         align="center"
         prop="num"
-        label="训练个数"
-        width="120"
-        sortable
+        label="训练次数"
+        width="80"
+      ></el-table-column>
+      <!-- 训练组数 -->
+      <el-table-column
+        align="center"
+        prop="groups"
+        label="训练组数"
+        width="80"
       ></el-table-column>
       <!-- 训练评分 -->
       <el-table-column
@@ -127,7 +133,7 @@ export default {
       this.tableLoading = true
       const facilityID = window.localStorage.getItem('facilityID')
       this.$axios
-        .post('/getTrainRecordByType_v2', {
+        .post('/getTrainRecordByType_v3', {
           devices_name: facilityID,
           user_id: this.$store.state.currentUserInfo.userId,
           type: 'activity-improvement'
@@ -143,8 +149,9 @@ export default {
 
               total.dataId = element.train_record_id
               total.pdfTime = element.create_time
+              total.num = element.num
+              total.groups = element.groups
               total.completion = element.completion
-              total.num = element.number_target
 
               newData.push(total)
             }
@@ -218,7 +225,7 @@ export default {
         })
         .catch(err => {
           this.$confirm(
-            `[活动度改善训练-数据记录环节] ${err}。请确保网络连接正常！`,
+            `[活动度训练-数据记录环节] ${err}。请确保网络连接正常！`,
             '网络请求错误',
             {
               type: 'error',
@@ -272,7 +279,7 @@ export default {
         .then(() => {
           this.tableLoading = true
           this.$axios
-            .post('/deleteTrainRecord_v2', {
+            .post('/deleteTrainRecord_v3', {
               train_record_id: row.dataId
             })
             .then(res => {
@@ -317,7 +324,7 @@ export default {
             })
             .catch(err => {
               this.$alert(
-                `[活动度改善训练-删除数据环节] ${err}。请确保网络连接正常，刷新页面后重试！`,
+                `[活动度训练-删除数据环节] ${err}。请确保网络连接正常，刷新页面后重试！`,
                 '网络请求错误',
                 {
                   type: 'error',

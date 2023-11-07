@@ -1,8 +1,8 @@
 <!--
  * @Author      : Mr.bin
  * @Date        : 2022-12-14 16:34:31
- * @LastEditTime: 2022-12-14 16:45:33
- * @Description : 静态训练-数据记录
+ * @LastEditTime: 2023-11-07 15:13:31
+ * @Description : 静态稳定训练-数据记录
 -->
 <template>
   <div class="train-static-record">
@@ -11,7 +11,7 @@
       <!-- 标题 -->
       <el-page-header
         title="返回首页"
-        content="静态训练"
+        content="静态稳定训练"
         @back="handleToHome"
       ></el-page-header>
     </div>
@@ -33,7 +33,7 @@
     >
       <!-- No -->
       <el-table-column align="center" type="index" width="50"></el-table-column>
-      <!-- 测试时间 -->
+      <!-- 训练时间 -->
       <el-table-column
         align="center"
         prop="pdfTime"
@@ -44,17 +44,43 @@
       <!-- 动作类型 -->
       <el-table-column
         align="center"
-        prop="type"
+        prop="action"
         label="动作类型"
-        width="160"
-        sortable
+        width="80"
+      ></el-table-column>
+      <!-- 目标范围 -->
+      <el-table-column
+        align="center"
+        prop="scope"
+        label="目标范围"
+        width="80"
+      ></el-table-column>
+      <!-- 训练目标 -->
+      <el-table-column
+        align="center"
+        prop="target"
+        label="训练目标"
+        width="80"
+      ></el-table-column>
+      <!-- 训练时长 -->
+      <el-table-column
+        align="center"
+        prop="keepTime"
+        label="训练时长"
+        width="80"
+      ></el-table-column>
+      <!-- 训练组数 -->
+      <el-table-column
+        align="center"
+        prop="groups"
+        label="训练组数"
+        width="80"
       ></el-table-column>
       <!-- 训练评分 -->
       <el-table-column
         align="center"
         prop="completion"
         label="训练评分"
-        sortable
       ></el-table-column>
 
       <!-- 查看报告按钮 -->
@@ -127,7 +153,7 @@ export default {
       this.tableLoading = true
       const facilityID = window.localStorage.getItem('facilityID')
       this.$axios
-        .post('/getTrainRecordByType_v2', {
+        .post('/getTrainRecordByType_v3', {
           devices_name: facilityID,
           user_id: this.$store.state.currentUserInfo.userId,
           type: 'static'
@@ -143,7 +169,6 @@ export default {
 
               total.dataId = element.train_record_id
               total.pdfTime = element.create_time
-              total.completion = element.completion
               if (element.type === 'static-1') {
                 total.type = '动作一'
               } else if (element.type === 'static-2') {
@@ -151,6 +176,10 @@ export default {
               } else if (element.type === 'static-3') {
                 total.type = '动作三'
               }
+              total.scope = element.scope
+              total.keepTime = element.keepTime
+              total.groups = element.groups
+              total.completion = element.completion
 
               newData.push(total)
             }
@@ -224,7 +253,7 @@ export default {
         })
         .catch(err => {
           this.$confirm(
-            `[静态训练-数据记录环节] ${err}。请确保网络连接正常！`,
+            `[静态稳定训练-数据记录环节] ${err}。请确保网络连接正常！`,
             '网络请求错误',
             {
               type: 'error',
@@ -278,7 +307,7 @@ export default {
         .then(() => {
           this.tableLoading = true
           this.$axios
-            .post('/deleteTrainRecord_v2', {
+            .post('/deleteTrainRecord_v3', {
               train_record_id: row.dataId
             })
             .then(res => {
@@ -323,7 +352,7 @@ export default {
             })
             .catch(err => {
               this.$alert(
-                `[静态训练-删除数据环节] ${err}。请确保网络连接正常，刷新页面后重试！`,
+                `[静态稳定训练-删除数据环节] ${err}。请确保网络连接正常，刷新页面后重试！`,
                 '网络请求错误',
                 {
                   type: 'error',

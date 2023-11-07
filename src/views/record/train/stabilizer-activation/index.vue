@@ -1,11 +1,11 @@
 <!--
  * @Author      : Mr.bin
- * @Date        : 2022-12-14 14:39:41
- * @LastEditTime: 2022-12-14 16:05:47
+ * @Date        : 2022-12-14 16:49:00
+ * @LastEditTime: 2023-11-07 15:16:46
  * @Description : 内核心激活训练-数据记录
 -->
 <template>
-  <div class="train-core-activation-record">
+  <div class="train-stabilizer-activation-record">
     <!-- 顶部 -->
     <div class="top">
       <!-- 标题 -->
@@ -33,7 +33,7 @@
     >
       <!-- No -->
       <el-table-column align="center" type="index" width="50"></el-table-column>
-      <!-- 测试时间 -->
+      <!-- 训练时间 -->
       <el-table-column
         align="center"
         prop="pdfTime"
@@ -41,13 +41,39 @@
         width="260"
         sortable
       ></el-table-column>
-      <!-- 完成情况 -->
+      <!-- 保持时长 -->
       <el-table-column
         align="center"
-        prop="adopt"
-        label="完成情况"
+        prop="keepTime"
+        label="保持时长"
+        width="80"
+      ></el-table-column>
+      <!-- 训练组数 -->
+      <el-table-column
+        align="center"
+        prop="groups"
+        label="训练组数"
+        width="80"
+      ></el-table-column>
+      <!-- 训练评分 -->
+      <el-table-column
+        align="center"
+        prop="completion"
+        label="训练评分"
+        sortable
       ></el-table-column>
 
+      <!-- 查看报告按钮 -->
+      <el-table-column align="center" label="操作" width="180">
+        <template slot-scope="scope">
+          <el-button
+            type="primary"
+            plain
+            @click="handleToPdf(scope.$index, scope.row)"
+            >查看报告</el-button
+          >
+        </template>
+      </el-table-column>
       <!-- 删除报告按钮 -->
       <el-table-column align="center" label="操作" width="180">
         <template slot-scope="scope">
@@ -63,6 +89,9 @@
 
     <!-- 按钮组 -->
     <div class="btn">
+      <el-button class="item" type="success" @click="handleSecularTrend"
+        >长期趋势报告</el-button
+      >
       <el-button class="item" type="primary" @click="handleRefresh"
         >刷 新 表 格</el-button
       >
@@ -74,7 +103,7 @@
 import { ipcRenderer } from 'electron'
 
 export default {
-  name: 'train-core-activation-record',
+  name: 'train-stabilizer-activation-record',
 
   data() {
     return {
@@ -104,10 +133,10 @@ export default {
       this.tableLoading = true
       const facilityID = window.localStorage.getItem('facilityID')
       this.$axios
-        .post('/getTrainRecordByType_v2', {
+        .post('/getTrainRecordByType_v3', {
           devices_name: facilityID,
           user_id: this.$store.state.currentUserInfo.userId,
-          type: 'core-activation'
+          type: 'stabilizer-activation'
         })
         .then(res => {
           const data = res.data
@@ -120,7 +149,9 @@ export default {
 
               total.dataId = element.train_record_id
               total.pdfTime = element.create_time
-              total.adopt = element.adopt === 1 ? '完成' : '未完成'
+              total.keepTime = element.keepTime
+              total.groups = element.groups
+              total.completion = element.completion
 
               newData.push(total)
             }
@@ -219,6 +250,21 @@ export default {
     },
 
     /**
+     * @description: 查看报告
+     * @param {*} index
+     * @param {*} row
+     */
+    handleToPdf(index, row) {
+      this.$router.push({
+        path: '/train-stabilizer-activation-pdf',
+        query: {
+          dataId: JSON.stringify(row.dataId),
+          routerName: JSON.stringify('/train-record/stabilizer-activation')
+        }
+      })
+    },
+
+    /**
      * @description: 删除报告
      * @param {*} index
      * @param {*} row
@@ -233,7 +279,7 @@ export default {
         .then(() => {
           this.tableLoading = true
           this.$axios
-            .post('/deleteTrainRecord_v2', {
+            .post('/deleteTrainRecord_v3', {
               train_record_id: row.dataId
             })
             .then(res => {
@@ -298,13 +344,25 @@ export default {
     },
 
     /**
+     * @description: 查看长期趋势报告
+     */
+    handleSecularTrend() {
+      this.$router.push({
+        path: '/train-stabilizer-activation-secular-trend-pdf',
+        query: {
+          routerName: JSON.stringify('/train-record/stabilizer-activation')
+        }
+      })
+    },
+
+    /**
      * @description: 刷新页面
      */
     handleRefresh() {
       this.$router.push({
         path: '/refresh',
         query: {
-          routerName: JSON.stringify('/train-record/core-activation'),
+          routerName: JSON.stringify('/train-record/stabilizer-activation'),
           duration: JSON.stringify(300)
         }
       })
@@ -314,7 +372,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.train-core-activation-record {
+.train-stabilizer-activation-record {
   width: 100%;
   height: 90%;
   @include flex(column, stretch, center);

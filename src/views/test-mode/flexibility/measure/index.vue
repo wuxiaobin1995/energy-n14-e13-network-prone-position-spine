@@ -1,7 +1,7 @@
 <!--
  * @Author      : Mr.bin
  * @Date        : 2022-12-08 16:13:32
- * @LastEditTime: 2023-10-24 17:52:03
+ * @LastEditTime: 2023-10-25 09:45:59
  * @Description : 活动度测试-测量页面
 -->
 <template>
@@ -319,6 +319,7 @@ export default {
 
           this.isOpened = false
 
+          // 计算上限、下限、活动度
           const maxDepth = Math.max(...this.depthArray)
           const minDepth = Math.min(...this.depthArray)
           this.flexibility = maxDepth - minDepth
@@ -330,9 +331,9 @@ export default {
             .post('/saveTestRecord_v3', {
               devices_name: facilityID,
               user_id: this.$store.state.currentUserInfo.userId,
-              flexibility: this.flexibility,
-              maxDepth: maxDepth,
-              minDepth: minDepth,
+              flexibility: this.flexibility, // 活动度
+              maxDepth: maxDepth, // 上限
+              minDepth: minDepth, // 下限
               type: 'flexibility'
             })
             .then(res => {

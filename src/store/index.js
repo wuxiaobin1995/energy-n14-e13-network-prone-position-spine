@@ -1,30 +1,15 @@
 /*
  * @Author      : Mr.bin
  * @Date        : 2022-10-15 17:00:42
- * @LastEditTime: 2022-12-07 22:32:19
+ * @LastEditTime: 2023-11-07 10:29:28
  * @Description : vuex
  */
 import Vue from 'vue'
 import Vuex from 'vuex'
-// import createPersistedState from 'vuex-persistedstate'
 
 Vue.use(Vuex)
 
 export default new Vuex.Store({
-  // plugins: [
-  //   createPersistedState({
-  //     key: 'vuex-persistedstate', // 自定义Storage中的Key名，默认是vuex
-  //     storage: window.sessionStorage, // 使用sessionStorage来固化数据
-  //     reducer(val) {
-  //       return {
-  //         aaa: val.aaa,
-  //         bbb: val.bbb,
-  //         ccc: val.ccc
-  //       }
-  //     }
-  //   })
-  // ],
-
   state: {
     /* 设备编号 */
     facilityID: '',
@@ -53,6 +38,9 @@ export default new Vuex.Store({
       minDepth: null
     },
 
+    /* 训练方案的选项 */
+    planSelect: [],
+
     /* 语音开关 */
     voiceSwitch: true
   },
@@ -79,6 +67,11 @@ export default new Vuex.Store({
     /* 最大、最小灵活度值 */
     SET_BOTHFLEXIBILITY(state, newBothFlexibility) {
       state.bothFlexibility = newBothFlexibility
+    },
+
+    /* 训练方案的选项 */
+    CHANGE_PLANSELECT(state, planSelect) {
+      state.planSelect = planSelect
     },
 
     /* 语音开关 */
@@ -122,6 +115,14 @@ export default new Vuex.Store({
     setBothFlexibility({ commit }, newBothFlexibility) {
       return new Promise((resolve, reject) => {
         commit('SET_BOTHFLEXIBILITY', newBothFlexibility)
+        resolve()
+      })
+    },
+
+    /* 训练方案的选项 */
+    changePlanSelect({ commit }, planSelect) {
+      return new Promise((resolve, reject) => {
+        commit('CHANGE_PLANSELECT', planSelect)
         resolve()
       })
     },

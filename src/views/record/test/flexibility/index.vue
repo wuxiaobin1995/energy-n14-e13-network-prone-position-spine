@@ -1,8 +1,8 @@
 <!--
  * @Author      : Mr.bin
  * @Date        : 2022-12-14 10:10:35
- * @LastEditTime: 2022-12-14 11:28:49
- * @Description : 骨盆灵活度测试-数据记录
+ * @LastEditTime: 2023-10-25 09:54:38
+ * @Description : 活动度测试-数据记录
 -->
 <template>
   <div class="test-flexibility-record">
@@ -11,7 +11,7 @@
       <!-- 标题 -->
       <el-page-header
         title="返回首页"
-        content="骨盆灵活度测试"
+        content="活动度测试"
         @back="handleToHome"
       ></el-page-header>
     </div>
@@ -55,11 +55,11 @@
         label="下限"
         width="220"
       ></el-table-column>
-      <!-- 灵活度 -->
+      <!-- 活动度 -->
       <el-table-column
         align="center"
         prop="flexibility"
-        label="骨盆灵活度"
+        label="活动度"
         sortable
       ></el-table-column>
 
@@ -133,7 +133,7 @@ export default {
       this.tableLoading = true
       const facilityID = window.localStorage.getItem('facilityID')
       this.$axios
-        .post('/getTestRecordByType_v2', {
+        .post('/getTestRecordByType_v3', {
           devices_name: facilityID,
           user_id: this.$store.state.currentUserInfo.userId,
           type: 'flexibility'
@@ -225,7 +225,7 @@ export default {
         })
         .catch(err => {
           this.$confirm(
-            `[骨盆灵活度测试-数据记录环节] ${err}。请确保网络连接正常！`,
+            `[活动度测试-数据记录环节] ${err}。请确保网络连接正常！`,
             '网络请求错误',
             {
               type: 'error',
@@ -279,7 +279,7 @@ export default {
         .then(() => {
           this.tableLoading = true
           this.$axios
-            .post('/deleteTestRecord_v2', {
+            .post('/deleteTestRecord_v3', {
               test_record_id: row.dataId
             })
             .then(res => {
@@ -324,7 +324,7 @@ export default {
             })
             .catch(err => {
               this.$alert(
-                `[骨盆灵活度测试-删除数据环节] ${err}。请确保网络连接正常，刷新页面后重试！`,
+                `[活动度测试-删除数据环节] ${err}。请确保网络连接正常，刷新页面后重试！`,
                 '网络请求错误',
                 {
                   type: 'error',

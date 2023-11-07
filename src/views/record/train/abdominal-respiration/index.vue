@@ -1,7 +1,7 @@
 <!--
  * @Author      : Mr.bin
  * @Date        : 2022-12-14 16:26:32
- * @LastEditTime: 2022-12-14 16:27:47
+ * @LastEditTime: 2023-11-07 15:03:19
  * @Description : 腹式呼吸训练-数据记录
 -->
 <template>
@@ -33,20 +33,12 @@
     >
       <!-- No -->
       <el-table-column align="center" type="index" width="50"></el-table-column>
-      <!-- 测试时间 -->
+      <!-- 训练时间 -->
       <el-table-column
         align="center"
         prop="pdfTime"
         label="训练时间"
         width="260"
-        sortable
-      ></el-table-column>
-      <!-- 训练个数 -->
-      <el-table-column
-        align="center"
-        prop="num"
-        label="训练个数"
-        width="120"
         sortable
       ></el-table-column>
       <!-- 训练评分 -->
@@ -127,7 +119,7 @@ export default {
       this.tableLoading = true
       const facilityID = window.localStorage.getItem('facilityID')
       this.$axios
-        .post('/getTrainRecordByType_v2', {
+        .post('/getTrainRecordByType_v3', {
           devices_name: facilityID,
           user_id: this.$store.state.currentUserInfo.userId,
           type: 'abdominal-respiration'
@@ -144,7 +136,6 @@ export default {
               total.dataId = element.train_record_id
               total.pdfTime = element.create_time
               total.completion = element.completion
-              total.num = element.number_target
 
               newData.push(total)
             }
@@ -272,7 +263,7 @@ export default {
         .then(() => {
           this.tableLoading = true
           this.$axios
-            .post('/deleteTrainRecord_v2', {
+            .post('/deleteTrainRecord_v3', {
               train_record_id: row.dataId
             })
             .then(res => {

@@ -1,24 +1,37 @@
 <!--
  * @Author      : Mr.bin
- * @Date        : 2022-12-12 21:22:05
- * @LastEditTime: 2022-12-13 11:55:35
- * @Description : 动态训练-具体测量
+ * @Date        : 2022-12-12 20:45:16
+ * @LastEditTime: 2023-11-07 15:10:27
+ * @Description : 动态稳定训练-具体测量
 -->
 <template>
   <div class="dynamic-measure" v-loading.fullscreen.lock="fullscreenLoading">
+    <!-- 语音播放 -->
+    <audio ref="audio" controls="controls" hidden :src="audioSrc" />
+
     <div class="wrapper">
       <!-- 主区域 -->
       <div class="main">
+        <!-- 左半部 -->
         <div class="left">
-          <div class="title">动态训练</div>
+          <div class="title">动态稳定训练</div>
           <div v-if="action === '1'" class="text">
-            动作要求：首先将光标移动到绿色区域内，随后腰腹部持续收紧使光标不晃动，单腿做屈伸的运动，过程中将肩部和臀部紧贴软垫，直至训练结束。
+            动作要求：控制光标移动到绿色区域内，持续收紧腰腹部使光标不晃动，<span
+              :style="{ color: 'green' }"
+              >单腿做屈伸的运动</span
+            >，过程中将肩部和臀部紧贴软垫，直至训练结束。
           </div>
           <div v-if="action === '2'" class="text">
-            动作要求：首先将光标移动到绿色区域内，随后腰腹部持续收紧使光标不晃动，双腿做交替屈伸的运动，过程中将肩部和臀部紧贴软垫，直至训练结束。
+            动作要求：控制光标移动到绿色区域内，持续收紧腰腹部使光标不晃动，<span
+              :style="{ color: 'green' }"
+              >双腿做屈伸的运动</span
+            >，过程中将肩部和臀部紧贴软垫，直至训练结束。
           </div>
           <div v-if="action === '3'" class="text">
-            动作要求：同时，首先将光标移动到绿色区域内，随后腰腹部持续收紧使光标不晃动，四肢做对侧交替屈伸的运动，过程中将肩部和臀部紧贴软垫，直至训练结束。
+            动作要求：控制光标移动到绿色区域内，持续收紧腰腹部使光标不晃动，<span
+              :style="{ color: 'green' }"
+              >四肢做对侧交替屈伸的运动</span
+            >，过程中将肩部和臀部紧贴软垫，直至训练结束。
           </div>
           <div class="content">
             <div class="time-bg">
@@ -45,14 +58,27 @@
           ></el-slider>
         </div>
 
+        <!-- 右半部 -->
         <div class="right">
-          <div class="title">动作展示</div>
+          <div class="amplify-btn">
+            <el-button class="item" type="success" @click="handleAmplify"
+              >放 大</el-button
+            >
+          </div>
           <div class="img">
             <el-image :src="actionSrc" fit="scale-down"></el-image>
           </div>
           <div class="text">
             <div>训练目标</div>
             <div class="val">{{ target }}</div>
+          </div>
+          <div class="text">
+            <div>训练组数</div>
+            <div class="val">{{ nowGroups }}/{{ groups }}</div>
+          </div>
+          <div class="text">
+            <div>当组完成度</div>
+            <div class="val">{{ completion }}</div>
           </div>
         </div>
       </div>
@@ -68,14 +94,7 @@
         >
         <el-button
           class="item"
-          :disabled="!isStart"
-          type="danger"
-          @click="handleOver"
-          >结束训练</el-button
-        >
-        <el-button
-          class="item"
-          :disabled="!isFinish"
+          :disabled="!isFinished"
           type="success"
           @click="handleToPdf"
           >查看报告</el-button
@@ -84,11 +103,45 @@
           >返 回</el-button
         >
       </div>
+
+      <!-- 休息倒计时弹窗 -->
+      <el-dialog
+        title="休 息 倒 计 时"
+        :visible.sync="restDialogVisible"
+        :close-on-click-modal="false"
+        :close-on-press-escape="false"
+        :show-close="false"
+        top="30vh"
+        width="20%"
+        center
+      >
+        <div class="rest-dialog">
+          <div class="item">{{ nowGroupRestTime }}</div>
+        </div>
+        <span slot="footer">
+          <el-button type="primary" @click="handleSkip">跳 过</el-button>
+        </span>
+      </el-dialog>
+
+      <!-- 图示放大弹窗 -->
+      <el-dialog
+        title="图 示"
+        :visible.sync="imgDialogVisible"
+        width="30%"
+        center
+      >
+        <div class="img-dialog">
+          <el-image :src="actionSrc" fit="scale-down"></el-image>
+        </div>
+      </el-dialog>
     </div>
   </div>
 </template>
 
 <script>
+/* 路径模块 */
+import path from 'path'
+
 /* 串口通信库 */
 import SerialPort from 'serialport'
 import Readline from '@serialport/parser-readline'
@@ -101,10 +154,31 @@ export default {
   data() {
     return {
       /* 路由传参 */
-      halfScope: JSON.parse(this.$route.query.halfScope),
-      target: JSON.parse(this.$route.query.target),
-      keepTime: JSON.parse(this.$route.query.keepTime),
-      action: JSON.parse(this.$route.query.action),
+      scope: JSON.parse(this.$route.query.scope), // 目标范围
+      target: JSON.parse(this.$route.query.target), // 训练目标
+      keepTime: JSON.parse(this.$route.query.keepTime), // 训练时长
+      groups: JSON.parse(this.$route.query.groups), // 训练组数
+      groupRestTime: JSON.parse(this.$route.query.groupRestTime), // 组间休息时长
+      action: JSON.parse(this.$route.query.action), // 动作
+
+      /* 语音相关 */
+      audioOpen: this.$store.state.voiceSwitch,
+      audioSrc: path.join(
+        __static,
+        `narrate/mandarin/Train/动态稳定训练-1.mp3`
+      ),
+      audioSrc1: path.join(
+        __static,
+        `narrate/mandarin/Train/动态稳定训练-1.mp3`
+      ),
+      audioSrc2: path.join(
+        __static,
+        `narrate/mandarin/Train/动态稳定训练-2.mp3`
+      ),
+      audioSrc3: path.join(
+        __static,
+        `narrate/mandarin/Train/动态稳定训练-3.mp3`
+      ),
 
       /* 串口相关变量 */
       usbPort: null,
@@ -112,31 +186,65 @@ export default {
       scmBaudRate: 115200, // 默认波特率115200
 
       /* 控制相关 */
-      isStart: false,
-      isFinish: false,
+      isStart: false, // 是否开始训练
+      isFinished: false, // 是否完成该训练
+      isRest: false, // 是否处于休息状态
 
       oneSrc: require('@/assets/img/Train/Dynamic/1.gif'),
       twoSrc: require('@/assets/img/Train/Dynamic/2.gif'),
       threeSrc: require('@/assets/img/Train/Dynamic/3.gif'),
 
       /* 其他 */
-      fullscreenLoading: false,
-      timeClock: null, // 计时器
-      time: JSON.parse(this.$route.query.keepTime), // 倒计时
-      core: 0, // 光标数值
-      depthArray: [], // 数据数组
+      fullscreenLoading: false, // 加载动画
+
+      imgDialogVisible: false, // 图示弹窗
+
+      nowGroups: 0, // 实时组数
+
+      trainTimeClock: null, // 训练计时器
+      time: JSON.parse(this.$route.query.keepTime), // 实时训练倒计时
+      restDialogVisible: false, // 休息倒计时弹窗
+      restTimeClock: null, // 休息计时器
+      nowGroupRestTime: JSON.parse(this.$route.query.groupRestTime), // 实时休息时间倒计时
+
+      core: 0, // 光标实时数值
+
+      completion: null, // 每组的完成度
+      depthArray: [], // 每组的数据数组
+      completionResultArray: [], // 多组的完成度数组
+
       dataId: null // 后端数据库中数据的id，字符串类型
     }
   },
 
   created() {
+    if (this.action === '1') {
+      this.audioSrc = this.audioSrc1
+    } else if (this.action === '2') {
+      this.audioSrc = this.audioSrc2
+    } else if (this.action === '3') {
+      this.audioSrc = this.audioSrc3
+    }
+
     this.updateBg()
     this.initSerialPort()
   },
+  mounted() {
+    if (this.audioOpen === true) {
+      setTimeout(() => {
+        this.$refs.audio.currentTime = 0
+        this.$refs.audio.play()
+      }, 500)
+    }
+  },
   beforeDestroy() {
-    // 清除计时器
-    if (this.timeClock) {
-      clearInterval(this.timeClock)
+    // 清除训练计时器
+    if (this.trainTimeClock) {
+      clearInterval(this.trainTimeClock)
+    }
+    // 清除休息计时器
+    if (this.restTimeClock) {
+      clearInterval(this.restTimeClock)
     }
     // 关闭串口
     if (this.usbPort) {
@@ -149,19 +257,23 @@ export default {
   computed: {
     actionSrc() {
       if (this.action === '1') {
-        this.audioSrc = this.audioOneSrc
         return this.oneSrc
       } else if (this.action === '2') {
-        this.audioSrc = this.audioTwoSrc
         return this.twoSrc
       } else {
-        this.audioSrc = this.audioThreeSrc
         return this.threeSrc
       }
     }
   },
 
   methods: {
+    /**
+     * @description: 图示放大
+     */
+    handleAmplify() {
+      this.imgDialogVisible = true
+    },
+
     /**
      * @description: 初始化串口对象
      */
@@ -206,10 +318,12 @@ export default {
             this.parser = this.usbPort.pipe(new Readline({ delimiter: '\n' }))
             this.parser.on('data', data => {
               const depth = parseInt(data)
+
               /* 只允许正整数和0，且[0, 100] */
               if (/^-?[0-9]\d*$/.test(depth) && depth >= 0 && depth <= 100) {
                 this.core = depth
-                if (this.isStart === true) {
+
+                if (this.isStart === true && this.isRest === false) {
                   this.depthArray.push(depth)
                 }
               }
@@ -248,7 +362,7 @@ export default {
      */
     updateBg() {
       const newTarget = this.target
-      const newHalfScope = this.halfScope
+      const newHalfScope = parseFloat((this.scope / 2).toFixed(1))
       this.bgColorObj = {
         'background-image': `linear-gradient(
           to top,
@@ -263,14 +377,84 @@ export default {
     },
 
     /**
-     * @description: 定时器逻辑函数
+     * @description: 休息倒计时弹窗函数
      */
-    setTimeClock() {
-      this.timeClock = setInterval(() => {
+    onRestDialog() {
+      // 清除训练计时器
+      if (this.trainTimeClock) {
+        clearInterval(this.trainTimeClock)
+      }
+
+      // 开启弹窗
+      this.restDialogVisible = true
+
+      // 初始化倒计时长
+      this.nowGroupRestTime = this.groupRestTime
+
+      // 开始休息计时器倒计时
+      this.restTimeClock = setInterval(() => {
+        this.nowGroupRestTime -= 1
+        if (this.nowGroupRestTime === 0) {
+          this.handleSkip()
+        }
+      }, 1000)
+    },
+    /**
+     * @description: 跳过休息按钮
+     */
+    handleSkip() {
+      // 休息结束，标志位置false
+      this.isRest = false
+
+      // 清除休息计时器
+      if (this.restTimeClock) {
+        clearInterval(this.restTimeClock)
+      }
+
+      // 重新启动训练计时器
+      this.depthArray = []
+      this.completion = null
+      this.time = this.keepTime
+      this.setTrainTimeClock()
+
+      // 关闭弹窗
+      this.restDialogVisible = false
+    },
+
+    /**
+     * @description: 训练定时器函数
+     */
+    setTrainTimeClock() {
+      this.trainTimeClock = setInterval(() => {
         this.time -= 1
-        /* 倒计时结束 */
         if (this.time === 0) {
-          this.saveData()
+          // 进入休息状态，标志位置true
+          this.isRest = true
+
+          this.nowGroups += 1
+
+          /* 计算完成度 */
+          const halfScope = parseFloat((this.scope / 2).toFixed(1))
+          const up = this.target + halfScope
+          const down = this.target - halfScope
+          const yesArray = []
+          for (let i = 0; i < this.depthArray.length; i++) {
+            const item = this.depthArray[i]
+            if (item >= down && item <= up) {
+              yesArray.push(item)
+            }
+          }
+          this.completion = parseFloat(
+            ((yesArray.length / this.depthArray.length) * 100).toFixed(0)
+          )
+          this.completionResultArray.push(this.completion)
+
+          if (this.nowGroups < this.groups) {
+            this.onRestDialog()
+          }
+          if (this.nowGroups === this.groups) {
+            this.saveData()
+          }
         }
       }, 1000)
     },
@@ -279,49 +463,58 @@ export default {
      * @description: 保存数据逻辑函数
      */
     saveData() {
-      if (this.timeClock) {
-        clearInterval(this.timeClock)
+      // 清除训练计时器
+      if (this.trainTimeClock) {
+        clearInterval(this.trainTimeClock)
       }
-      this.isStart = false
-
-      /* 计算完成度 */
-      const up = this.target + this.halfScope
-      const down = this.target - this.halfScope
-      const yesArray = []
-      for (let i = 0; i < this.depthArray.length; i++) {
-        const item = this.depthArray[i]
-        if (item >= down && item <= up) {
-          yesArray.push(item)
+      // 清除休息计时器
+      if (this.restTimeClock) {
+        clearInterval(this.restTimeClock)
+      }
+      // 关闭串口
+      if (this.usbPort) {
+        if (this.usbPort.isOpen) {
+          this.usbPort.close()
         }
       }
-      const result = parseFloat(
-        ((yesArray.length / this.depthArray.length) * 100).toFixed(0)
-      )
+
+      /* 计算平均完成度 */
+      let sum = 0
+      for (let i = 0; i < this.completionResultArray.length; i++) {
+        sum += this.completionResultArray[i]
+      }
+      const completion = parseInt(sum / this.completionResultArray.length)
 
       /* 保存 */
       const facilityID = window.localStorage.getItem('facilityID')
       this.fullscreenLoading = true
       this.$axios
-        .post('/saveTrainRecord_v2', {
+        .post('/saveTrainRecord_v3', {
           devices_name: facilityID,
           user_id: this.$store.state.currentUserInfo.userId,
-          keep_time: this.keepTime,
-          training_target: this.target,
-          completion: result,
-          record_array: JSON.stringify(this.depthArray),
+
+          scope: this.scope, // 目标范围
+          target: this.target, // 训练目标
+          keepTime: this.keepTime, // 训练时长
+          groups: this.groups, // 训练组数
+          groupRestTime: this.groupRestTime, // 组间休息时长
+          action: this.action, // 动作
+
+          completionResultArray: JSON.stringify(this.completionResultArray), // 多组的完成度数组
+          completion: completion, // 平均完成度
+
           type: `dynamic-${this.action}`
         })
         .then(res => {
           const data = res.data
           if (data.status === 1) {
             /* 成功 */
-            this.isFinish = true
-            this.time = this.keepTime // 倒计时
+            this.isFinished = true
             this.dataId = data.result.train_record_id
             this.$message({
               message: `[状态码为 ${data.status}] 数据保存成功`,
               type: 'success',
-              duration: 3000
+              duration: 2000
             })
           } else if (data.status === 0) {
             /* 失败 */
@@ -383,7 +576,7 @@ export default {
         })
         .catch(err => {
           this.$alert(
-            `[动态训练环节] ${err}。请确保网络连接正常，点击"返回上一页"按钮，然后重新测试！`,
+            `[动态稳定训练环节] ${err}。请确保网络连接正常，点击"返回上一页"按钮，然后重新测试！`,
             '网络请求错误',
             {
               type: 'error',
@@ -397,7 +590,6 @@ export default {
         })
         .finally(() => {
           this.fullscreenLoading = false
-          this.isStart = false
         })
     },
 
@@ -405,21 +597,8 @@ export default {
      * @description: 开始按钮
      */
     handleStart() {
-      this.isStart = false
-      this.isFinish = false
-      this.timeClock = null // 计时器
-      this.time = this.keepTime // 倒计时
-      this.depthArray = []
-
       this.isStart = true
-      this.setTimeClock() // 开始计时
-    },
-
-    /**
-     * @description: 结束按钮
-     */
-    handleOver() {
-      this.saveData()
+      this.setTrainTimeClock() // 开始训练计时
     },
 
     /**
@@ -548,7 +727,7 @@ export default {
           font-size: 18px;
         }
         .img {
-          width: 44vh;
+          width: 38vh;
           @include flex(row, center, center);
         }
         .text {

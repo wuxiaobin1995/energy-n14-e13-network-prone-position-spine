@@ -1,8 +1,8 @@
 <!--
  * @Author      : Mr.bin
  * @Date        : 2022-12-12 21:31:50
- * @LastEditTime: 2022-12-15 15:28:52
- * @Description : 活动度改善训练-导出PDF
+ * @LastEditTime: 2023-10-25 17:22:03
+ * @Description : 活动度训练-导出PDF
 -->
 <template>
   <div
@@ -14,7 +14,7 @@
       <div class="top">
         <el-image class="logo" :src="logoSrc" fit="scale-down"></el-image>
 
-        <div class="title">活动度改善训练报告</div>
+        <div class="title">活动度训练报告</div>
 
         <div class="divider"></div>
 
@@ -37,8 +37,11 @@
           <el-image :src="lv" fit="scale-down"></el-image>
           <div class="val">
             <div class="title" :style="{ color: colorLv }">{{ textLv }}</div>
-            <div class="num">训练个数：{{ pdfData.num }}</div>
-            <div class="completion">训练评分：{{ pdfData.completion }}</div>
+            <div class="item">综合训练评分：{{ pdfData.completion }}分</div>
+            <div class="item">训练次数：{{ pdfData.num }}</div>
+            <div class="item">训练组数：{{ pdfData.groups }}</div>
+            <div class="item">间隔时长：{{ pdfData.intervalTime }}秒</div>
+            <div class="item">组间休息时长：{{ pdfData.groupRestTime }}秒</div>
             <div class="advice">{{ advice }}</div>
           </div>
         </div>
@@ -74,6 +77,7 @@ export default {
       option: {},
       xData: [], // 横坐标数组
 
+      /* 其他 */
       fullscreenLoading: false,
 
       logoSrc: require('@/assets/img/Company_Logo/logo_1.png'), // 公司商标
@@ -89,20 +93,26 @@ export default {
       pdfData: {
         userName: '',
         sex: '',
-        pdfTime: '',
-        completion: '', // 完成度
-        num: '', // 训练个数
-        intervalTime: '', // 间隔时间
+
         targetUp: '', // 上限
         targetDown: '', // 下限
-        depthArray: [] // 数据数组
+
+        num: '', // 训练次数
+        groups: '', // 训练组数
+        intervalTime: '', // 间隔时间
+        groupRestTime: '', // 组间休息时长
+
+        bgPdfArray: [], // 报告参考曲线数组
+
+        comprehensiveArray: [], // 综合曲线轨迹
+        completion: '', // 完成度
+
+        pdfTime: ''
       },
+
       hospital: window.localStorage.getItem('hospital')
         ? window.localStorage.getItem('hospital')
-        : '未设置医院',
-
-      standardArray: [], // 基础参考曲线
-      fullArray: [] // 完整参考曲线
+        : '未设置医院'
     }
   },
 
@@ -117,7 +127,7 @@ export default {
     getOnlyData() {
       this.fullscreenLoading = true
       this.$axios
-        .post('/getOneTrainRecord_v2', {
+        .post('/getOneTrainRecord_v3', {
           train_record_id: this.dataId
         })
         .then(res => {
@@ -126,13 +136,22 @@ export default {
             /* 成功 */
             this.pdfData.userName = data.result.user_name
             this.pdfData.sex = data.result.sex === 1 ? '男' : '女'
-            this.pdfData.pdfTime = data.result.create_time
-            this.pdfData.depthArray = JSON.parse(data.result.record_array)
+
+            this.pdfData.targetUp = data.result.targetUp
+            this.pdfData.targetDown = data.result.targetDown
+            this.pdfData.num = data.result.num
+            this.pdfData.groups = data.result.groups
+            this.pdfData.intervalTime = data.result.intervalTime
+            this.pdfData.groupRestTime = data.result.groupRestTime
+
+            this.pdfData.bgPdfArray = JSON.parse(data.result.bgPdfArray)
+
+            this.pdfData.comprehensiveArray = JSON.parse(
+              data.result.comprehensiveArray
+            )
             this.pdfData.completion = data.result.completion
-            this.pdfData.num = data.result.number_target
-            this.pdfData.targetUp = data.result.upper_limit
-            this.pdfData.targetDown = data.result.lower_limit
-            this.pdfData.intervalTime = data.result.intervalTime_target
+
+            this.pdfData.pdfTime = data.result.create_time
 
             /* 根据不同的评分动态变化显示 */
             if (this.pdfData.completion < 40) {
@@ -204,7 +223,7 @@ export default {
         })
         .catch(err => {
           this.$confirm(
-            `[活动度改善训练-PDF报告环节] ${err}。请确保网络连接正常！`,
+            `[活动度训练-PDF报告环节] ${err}。请确保网络连接正常！`,
             '网络请求错误',
             {
               type: 'error',
@@ -233,36 +252,9 @@ export default {
      */
     initChart() {
       /* x轴 */
-      for (
-        let i = 0;
-        i < this.pdfData.num * this.pdfData.intervalTime * 20;
-        i++
-      ) {
+      for (let i = 0; i < this.pdfData.comprehensiveArray.length; i++) {
         this.xData.push(parseFloat((i * 0.1).toFixed(1)))
       }
-
-      /* 绘制参考曲线逻辑 */
-      const targetUp = this.pdfData.targetUp
-      const targetDown = this.pdfData.targetDown
-      const intervalTime = this.pdfData.intervalTime
-      const interval = parseFloat(
-        ((targetUp - targetDown) / (intervalTime * 10)).toFixed(3)
-      ) // 间隔值
-      this.standardArray.push(targetDown)
-      let sum = targetDown
-      for (let i = 0; i < intervalTime * 10 - 1; i++) {
-        sum = sum + interval
-        this.standardArray.push(sum)
-      }
-      sum = targetUp
-      for (let i = 0; i < intervalTime * 10; i++) {
-        this.standardArray.push(sum)
-        sum = sum - interval
-      }
-      for (let i = 0; i < this.pdfData.num; i++) {
-        this.fullArray.push(...this.standardArray)
-      }
-      this.fullArray.push(targetDown)
 
       this.myChart = this.$echarts.init(document.getElementById('chart'))
       this.option = {
@@ -277,22 +269,26 @@ export default {
           splitLine: {
             show: false // 隐藏背景网格线
           },
-          min: targetDown - 10 >= 0 ? targetDown - 10 : 0,
-          max: targetUp + 10 <= 100 ? targetUp + 10 : 100
+          min:
+            this.pdfData.targetDown - 10 >= 0
+              ? this.pdfData.targetDown - 10
+              : 0,
+          max:
+            this.pdfData.targetUp + 10 <= 100 ? this.pdfData.targetUp + 10 : 100
         },
         legend: {},
         series: [
           {
             name: '运动轨迹',
-            data: this.pdfData.depthArray,
+            data: this.pdfData.comprehensiveArray,
             color: 'red',
             type: 'line',
             smooth: true,
             showSymbol: false
           },
           {
-            name: `参考曲线(${targetDown}~${targetUp})`,
-            data: this.fullArray,
+            name: `参考曲线(${this.pdfData.targetDown}~${this.pdfData.targetUp})`,
+            data: this.pdfData.bgPdfArray,
             color: 'rgba(0, 255, 0, 0.5)',
             type: 'line',
             smooth: false,
@@ -310,7 +306,7 @@ export default {
     handlePdf() {
       this.$htmlToPdf(
         'pdf',
-        `活动度改善训练报告 ${this.$moment().format('YYYY-MM-DD HH_mm_ss')}`,
+        `活动度训练报告 ${this.$moment().format('YYYY-MM-DD HH_mm_ss')}`,
         500
       )
     },
@@ -385,13 +381,7 @@ export default {
             font-size: 46px;
             margin-bottom: 30px;
           }
-          .num {
-            margin-bottom: 3px;
-          }
-          .completion {
-            margin-bottom: 3px;
-          }
-          .advice {
+          .item {
             margin-bottom: 3px;
           }
         }

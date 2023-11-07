@@ -1,7 +1,7 @@
 <!--
  * @Author      : Mr.bin
  * @Date        : 2022-12-14 17:35:07
- * @LastEditTime: 2022-12-14 17:38:46
+ * @LastEditTime: 2023-11-07 14:51:34
  * @Description : 腹式呼吸训练-导出长期趋势PDF
 -->
 <template>
@@ -84,7 +84,7 @@ export default {
       this.fullscreenLoading = true
       const facilityID = window.localStorage.getItem('facilityID')
       this.$axios
-        .post('/getTrainRecordByType_v2', {
+        .post('/getTrainRecordByType_v3', {
           devices_name: facilityID,
           user_id: this.$store.state.currentUserInfo.userId,
           type: 'abdominal-respiration'
