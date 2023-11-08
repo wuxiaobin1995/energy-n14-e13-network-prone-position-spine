@@ -1,7 +1,7 @@
 <!--
  * @Author      : Mr.bin
  * @Date        : 2022-12-12 21:31:50
- * @LastEditTime: 2023-10-25 14:16:41
+ * @LastEditTime: 2023-11-08 16:57:24
  * @Description : 腹式呼吸训练-导出PDF
 -->
 <template>
@@ -134,10 +134,10 @@ export default {
             this.pdfData.targetDown = data.result.targetDown
             this.pdfData.midpoint = data.result.midpoint
             this.pdfData.trainTime = data.result.trainTime
-
-            this.pdfData.depthArray = JSON.parse(data.result.depthArray)
             this.pdfData.bgUpArray = JSON.parse(data.result.bgUpArray)
             this.pdfData.bgDownArray = JSON.parse(data.result.bgDownArray)
+
+            this.pdfData.depthArray = JSON.parse(data.result.depthArray)
             this.pdfData.completion = data.result.completion
 
             this.pdfData.pdfTime = data.result.create_time

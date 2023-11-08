@@ -1,7 +1,7 @@
 <!--
  * @Author      : Mr.bin
  * @Date        : 2022-10-15 17:00:42
- * @LastEditTime: 2023-10-24 14:24:43
+ * @LastEditTime: 2023-11-08 15:11:08
  * @Description : 根组件
 -->
 <template>

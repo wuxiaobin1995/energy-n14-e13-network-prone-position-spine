@@ -1,7 +1,7 @@
 <!--
  * @Author      : Mr.bin
  * @Date        : 2023-06-02 15:22:05
- * @LastEditTime: 2023-11-07 16:21:53
+ * @LastEditTime: 2023-11-08 17:22:42
  * @Description : 方案-腹式呼吸训练-具体测量
 -->
 <template>

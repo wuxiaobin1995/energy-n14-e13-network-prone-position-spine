@@ -1,7 +1,7 @@
 <!--
  * @Author      : Mr.bin
  * @Date        : 2022-12-12 17:50:52
- * @LastEditTime: 2023-11-07 10:48:48
+ * @LastEditTime: 2023-11-08 16:57:14
  * @Description : 腹式呼吸训练-具体测量
 -->
 <template>
@@ -320,8 +320,8 @@ export default {
 
           targetUp: this.targetUp, // 上限
           targetDown: this.targetDown, // 下限
-          trainTime: this.trainTime, // 训练时长
           midpoint: this.midpoint, // 活动度中点
+          trainTime: this.trainTime, // 训练时长
           bgUpArray: JSON.stringify(this.bgUpArray), // 上限数组
           bgDownArray: JSON.stringify(this.bgDownArray), // 下限数组
 
