@@ -1,7 +1,7 @@
 <!--
  * @Author      : Mr.bin
  * @Date        : 2023-06-05 20:31:07
- * @LastEditTime: 2023-11-07 11:41:50
+ * @LastEditTime: 2023-11-09 09:51:32
  * @Description : 方案-静态稳定训练-具体测量
 -->
 <template>
