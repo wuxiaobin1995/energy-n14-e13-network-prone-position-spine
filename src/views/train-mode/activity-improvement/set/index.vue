@@ -1,7 +1,7 @@
 <!--
  * @Author      : Mr.bin
  * @Date        : 2022-12-09 21:12:48
- * @LastEditTime: 2023-10-25 14:51:13
+ * @LastEditTime: 2023-11-20 09:57:06
  * @Description : 活动度训练-参数设置
 -->
 <template>
@@ -26,7 +26,7 @@
       <!-- 配置项 -->
       <div class="set">
         <!-- 训练次数 -->
-        <div class="set__one">
+        <div class="item">
           <span class="text">训练次数</span>
           <el-input-number
             v-model="num"

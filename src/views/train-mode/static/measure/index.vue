@@ -1,7 +1,7 @@
 <!--
  * @Author      : Mr.bin
  * @Date        : 2022-12-12 20:45:16
- * @LastEditTime: 2023-11-06 15:42:03
+ * @LastEditTime: 2023-11-20 10:17:48
  * @Description : 静态稳定训练-具体测量
 -->
 <template>
@@ -733,7 +733,7 @@ export default {
         .text {
           padding-right: 50px;
           font-size: 28px;
-          margin: 80px 0;
+          margin: 30px 0;
           @include flex(row, space-between, center);
           .val {
             @include flex(row, center, center);
@@ -754,6 +754,20 @@ export default {
         font-size: 26px;
         margin: 0 40px;
       }
+    }
+
+    .rest-dialog {
+      @include flex(column, center, center);
+      .item {
+        font-size: 90px;
+        font-weight: 700;
+        color: green;
+      }
+    }
+
+    .img-dialog {
+      @include flex(row, center, center);
+      transform: scale(2);
     }
   }
 }

@@ -1,7 +1,7 @@
 <!--
  * @Author      : Mr.bin
  * @Date        : 2023-02-08 14:17:27
- * @LastEditTime: 2023-10-26 11:39:37
+ * @LastEditTime: 2023-11-20 10:08:58
  * @Description : 内核心激活训练-具体测量
 -->
 <template>

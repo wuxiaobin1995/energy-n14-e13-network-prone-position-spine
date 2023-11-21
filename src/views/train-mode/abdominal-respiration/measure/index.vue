@@ -1,7 +1,7 @@
 <!--
  * @Author      : Mr.bin
  * @Date        : 2022-12-12 17:50:52
- * @LastEditTime: 2023-11-08 16:57:14
+ * @LastEditTime: 2023-11-20 09:25:40
  * @Description : 腹式呼吸训练-具体测量
 -->
 <template>
@@ -326,7 +326,7 @@ export default {
           bgDownArray: JSON.stringify(this.bgDownArray), // 下限数组
 
           depthArray: JSON.stringify(this.depthArray), // 完整数据数组
-          completion: completion, // 完成度%
+          completion: this.completion, // 完成度%
 
           type: 'abdominal-respiration'
         })
