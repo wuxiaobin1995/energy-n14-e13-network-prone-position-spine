@@ -1,7 +1,7 @@
 <!--
  * @Author      : Mr.bin
  * @Date        : 2022-12-14 14:37:48
- * @LastEditTime: 2023-11-07 14:46:22
+ * @LastEditTime: 2024-01-04 15:14:56
  * @Description : 训练-数据记录
 -->
 <template>
@@ -36,6 +36,7 @@
         >
 
         <el-button
+          :style="{ display: 'none' }"
           class="item"
           type="success"
           round

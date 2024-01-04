@@ -1,7 +1,7 @@
 <!--
  * @Author      : Mr.bin
  * @Date        : 2022-12-09 16:54:56
- * @LastEditTime: 2023-10-25 11:17:22
+ * @LastEditTime: 2024-01-04 15:13:50
  * @Description : 训练-项目选择
 -->
 <template>
@@ -48,6 +48,7 @@
       >
 
       <el-button
+        :style="{ display: 'none' }"
         class="item"
         :class="[isDeepSensory]"
         :icon="isDeepSensory === 'btn__active' ? 'el-icon-circle-check' : ''"

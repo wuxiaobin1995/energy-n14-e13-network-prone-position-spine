@@ -1,7 +1,7 @@
 <!--
  * @Author      : Mr.bin
  * @Date        : 2023-06-01 14:44:04
- * @LastEditTime: 2023-11-07 10:13:06
+ * @LastEditTime: 2024-01-04 15:15:43
  * @Description : 训练方案-项目选择
 -->
 <template>
@@ -35,11 +35,11 @@
               border
               :disabled="!isStabilizerActivation"
             ></el-checkbox>
-            <el-checkbox
+            <!-- <el-checkbox
               label="本体感觉训练"
               border
               :disabled="!isDeepSensory"
-            ></el-checkbox>
+            ></el-checkbox> -->
             <el-checkbox
               label="静态稳定训练"
               border

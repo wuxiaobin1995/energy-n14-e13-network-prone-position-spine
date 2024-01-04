@@ -14,7 +14,7 @@
         fit="scale-down"
         @click.native="handleToHome"
       ></el-image>
-      <span class="text">核心稳定训练系统-网络版 v3.0.0</span>
+      <span class="text">核心稳定训练系统-网络版 v3.1.0</span>
     </div>
 
     <!-- 其他 -->
