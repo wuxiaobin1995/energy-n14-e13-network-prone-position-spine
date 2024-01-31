@@ -1,7 +1,7 @@
 <!--
  * @Author      : Mr.bin
  * @Date        : 2022-12-08 16:13:32
- * @LastEditTime: 2023-10-25 09:45:59
+ * @LastEditTime: 2024-01-12 17:10:34
  * @Description : 活动度测试-测量页面
 -->
 <template>
@@ -217,7 +217,7 @@ export default {
                 this.option.series[0].data = this.depthArray
                 this.myChart.setOption(this.option)
                 // 完成
-                if (this.depthArray.length === 180) {
+                if (this.depthArray.length === 250) {
                   this.saveData()
                 }
               }
@@ -273,7 +273,7 @@ export default {
     initChart() {
       // 计算横坐标数组
       this.xData = []
-      for (let i = 0; i < 180; i++) {
+      for (let i = 0; i < 250; i++) {
         this.xData.push(parseFloat((i * 0.1).toFixed(1)))
       }
 
