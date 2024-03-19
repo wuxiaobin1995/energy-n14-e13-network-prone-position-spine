@@ -1,7 +1,7 @@
 <!--
  * @Author      : Mr.bin
  * @Date        : 2022-12-12 20:45:16
- * @LastEditTime: 2023-11-20 10:17:48
+ * @LastEditTime: 2024-03-18 16:28:48
  * @Description : 静态稳定训练-具体测量
 -->
 <template>
@@ -499,6 +499,8 @@ export default {
           groups: this.groups, // 训练组数
           groupRestTime: this.groupRestTime, // 组间休息时长
           action: this.action, // 动作
+
+          depthSDArray: JSON.stringify(this.depthArray), // 数据数组
 
           completionResultArray: JSON.stringify(this.completionResultArray), // 多组的完成度数组
           completion: completion, // 平均完成度

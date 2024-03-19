@@ -1,7 +1,7 @@
 <!--
  * @Author      : Mr.bin
  * @Date        : 2022-12-14 17:35:07
- * @LastEditTime: 2023-11-07 15:12:23
+ * @LastEditTime: 2024-03-18 16:59:04
  * @Description : 静态稳定训练-导出长期趋势PDF
 -->
 <template>

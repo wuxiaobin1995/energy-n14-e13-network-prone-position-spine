@@ -1,7 +1,7 @@
 <!--
  * @Author      : Mr.bin
  * @Date        : 2022-12-14 16:34:31
- * @LastEditTime: 2023-11-07 15:13:31
+ * @LastEditTime: 2024-03-18 16:39:11
  * @Description : 静态稳定训练-数据记录
 -->
 <template>
@@ -169,14 +169,15 @@ export default {
 
               total.dataId = element.train_record_id
               total.pdfTime = element.create_time
-              if (element.type === 'static-1') {
-                total.type = '动作一'
-              } else if (element.type === 'static-2') {
-                total.type = '动作二'
-              } else if (element.type === 'static-3') {
-                total.type = '动作三'
+              if (element.action === '1') {
+                total.action = '动作一'
+              } else if (element.action === '2') {
+                total.action = '动作二'
+              } else if (element.action === '3') {
+                total.action = '动作三'
               }
               total.scope = element.scope
+              total.target = element.target
               total.keepTime = element.keepTime
               total.groups = element.groups
               total.completion = element.completion

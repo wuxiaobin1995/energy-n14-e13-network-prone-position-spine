@@ -1,7 +1,7 @@
 <!--
  * @Author      : Mr.bin
  * @Date        : 2022-12-12 21:31:50
- * @LastEditTime: 2023-11-06 17:11:53
+ * @LastEditTime: 2024-03-18 17:27:25
  * @Description : 静态稳定训练-导出PDF
 -->
 <template>
@@ -73,6 +73,11 @@
               <td>{{ item }}</td>
             </tr>
           </table>
+
+          <!-- 曲线图 -->
+          <div class="chart">
+            <div id="chart" :style="{ width: '100%', height: '100%' }"></div>
+          </div>
         </div>
 
         <div class="right">
@@ -105,6 +110,11 @@ export default {
       dataId: JSON.parse(this.$route.query.dataId),
       routerName: JSON.parse(this.$route.query.routerName),
 
+      /* 图形相关变量 */
+      myChart: null,
+      option: {},
+      xData: [], // 横坐标数组
+
       fullscreenLoading: false,
       logoSrc: require('@/assets/img/Company_Logo/logo_1.png'), // 公司商标
 
@@ -119,10 +129,16 @@ export default {
 
         scope: '', // 目标范围
         target: '', // 训练目标
+
+        upArr: [], // 上限数组
+        downArr: [], // 下限数组
+
         keepTime: '', // 训练时长
         groups: '', // 训练组数
         groupRestTime: '', // 组间休息时长
         action: '', // 动作
+
+        depthSDArray: [], // 数据数组
 
         completionResultArray: [], // 多组的完成度数组
         completion: '', // 平均完成度
@@ -179,6 +195,21 @@ export default {
             } else if (this.pdfData.action === '3') {
               this.showSrc = this.threeSrc
             }
+
+            this.pdfData.depthSDArray = JSON.parse(data.result.depthSDArray)
+            const scopeHalf = this.pdfData.scope / 2
+            const up = parseFloat((this.pdfData.target + scopeHalf).toFixed(1))
+            const down = parseFloat(
+              (this.pdfData.target - scopeHalf).toFixed(1)
+            )
+            this.xData = []
+            for (let i = 0; i < this.pdfData.depthSDArray.length; i++) {
+              this.xData.push(parseFloat((i * 0.1).toFixed(1)))
+              this.pdfData.upArr.push(up)
+              this.pdfData.downArr.push(down)
+            }
+
+            this.initChart()
           } else if (data.status === 0) {
             /* 失败 */
             this.$confirm(
@@ -240,6 +271,56 @@ export default {
         .finally(() => {
           this.fullscreenLoading = false
         })
+    },
+
+    /**
+     * @description: 初始化echarts图形
+     */
+    initChart() {
+      this.myChart = this.$echarts.init(document.getElementById('chart'))
+      this.option = {
+        xAxis: {
+          type: 'category',
+          name: 'time',
+          data: this.xData,
+          boundaryGap: true // 从0点开始
+        },
+        yAxis: {
+          type: 'value',
+          splitLine: {
+            show: false // 隐藏背景网格线
+          }
+        },
+        legend: {},
+        series: [
+          {
+            name: '上限',
+            data: this.pdfData.upArr,
+            color: 'red',
+            type: 'line',
+            smooth: false,
+            showSymbol: false
+          },
+          {
+            name: '下限',
+            data: this.pdfData.downArr,
+            color: 'red',
+            type: 'line',
+            smooth: false,
+            showSymbol: false
+          },
+          {
+            name: '曲线轨迹',
+            data: this.pdfData.depthSDArray,
+            color: 'green',
+            type: 'line',
+            smooth: false,
+            showSymbol: false
+          }
+        ],
+        animation: false
+      }
+      this.myChart.setOption(this.option)
     },
 
     /**
@@ -323,9 +404,14 @@ export default {
       }
 
       .center {
+        @include flex(column, center, center);
         .table {
           width: 350px;
           font-size: 22px;
+        }
+        .chart {
+          width: 800px;
+          height: 350px;
         }
       }
 
